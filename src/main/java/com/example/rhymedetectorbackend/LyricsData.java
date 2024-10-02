@@ -1,9 +1,9 @@
 package com.example.rhymedetectorbackend;
 
-public class UserInput {
+public class LyricsData {
     private String lyrics;
 
-    public UserInput(String lyrics) {
+    public LyricsData(String lyrics) {
         this.lyrics = lyrics;
     }
 
