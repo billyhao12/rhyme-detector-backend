@@ -9,7 +9,7 @@ public class Controller {
 
     @PostMapping("/rhymes/multisyllable")
     public LyricsData highlightMultisyllableRhymes(@RequestBody LyricsData userInput) {
-//        String[] plainLines = userInput.getLyrics().split("\n");
+        String[] plainLines = userInput.getLyrics().split("\n");
         return userInput;
     }
 }
