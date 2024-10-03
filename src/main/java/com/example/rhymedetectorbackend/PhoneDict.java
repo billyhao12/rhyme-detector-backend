@@ -9,7 +9,10 @@ public class PhoneDict {
 
     public PhoneDict(String dictfile) throws Exception {
 
-        InputStream in = this.getClass().getResourceAsStream(dictfile);
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(dictfile);
+        if (in == null) {
+            throw new FileNotFoundException("Resource not found: " + dictfile);
+        }
         BufferedReader f = new BufferedReader(new InputStreamReader(in));
 
         dict = new Hashtable<String, PWord>();

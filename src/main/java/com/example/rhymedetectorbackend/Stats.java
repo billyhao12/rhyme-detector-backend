@@ -390,7 +390,10 @@ public class Stats {
         clusterMatchU = new int[MAX_CLUSTER][MAX_CLUSTER];
 
         //BufferedReader f = new BufferedReader(new FileReader(fName));
-        InputStream in = this.getClass().getResourceAsStream(fName);
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(fName);
+        if (in == null) {
+            throw new FileNotFoundException("Resource not found: " + fName);
+        }
         BufferedReader f = new BufferedReader(new InputStreamReader(in));
 
         String line = "";
