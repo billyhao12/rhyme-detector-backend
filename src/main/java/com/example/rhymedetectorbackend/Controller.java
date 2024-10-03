@@ -68,6 +68,10 @@ public class Controller {
             ArrayList<Rhyme> curLineRhymes = rc.collection[i];
 
             SimpleAttributeSet[] attributes = new SimpleAttributeSet[5];
+            for (int j = 0; j < attributes.length; j++) {
+                attributes[j] = new SimpleAttributeSet();
+            }
+
             StyleConstants.setBold(attributes[0], true);
             StyleConstants.setItalic(attributes[1], true);
             // StyleConstants.setFontFamily(attributes[2], "Serif");
