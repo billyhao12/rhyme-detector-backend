@@ -89,7 +89,9 @@ public class Controller {
             ArrayList<Rhyme> curLineRhymes = rc.collection[i];
 
             // Loop through rhyme phrase pairs
-            for (Rhyme r : curLineRhymes) {
+            for (int j = 0; j < curLineRhymes.size(); j++) {
+                Rhyme r = curLineRhymes.get(j);
+
                 // First and last word of phrase A
                 int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
                 int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
