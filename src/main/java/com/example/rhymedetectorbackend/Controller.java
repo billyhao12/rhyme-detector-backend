@@ -48,7 +48,17 @@ public class Controller {
         }
 
         StringBuilder textOutput = new StringBuilder();
+        String textOutput2 = "";
         int styleMod = 0;
+
+        ArrayList curLine = new ArrayList();
+
+        // size of ArrayList is number of words in first PLine
+        ArrayList nextLine = new ArrayList(rc.lines.get(0).size());
+        String[] firstPlainLine = plainLines[0].split(" ");
+        for (int i = 0; i < firstPlainLine.length; i++) {
+            nextLine.add(firstPlainLine[i]);
+        }
 
         String[] styles = {
                 "<b>", "</b>",    // Bold
@@ -58,68 +68,53 @@ public class Controller {
                 "<s>", "</s>"     // Strikethrough
         };
 
+        int curLineAddedTags = 0;
+        int nextLineAddedTags = 0;
+
+        // Loop through the lines in the rhyme collection
         for (int i = 0; i < rc.lines.size(); i++) {
+            curLine = nextLine;
+            curLineAddedTags = nextLineAddedTags;
+
+            // If we are not on the last line, prepare ArrayList for next line
+            if (rc.lines.size() > i + 1) {
+                nextLine = new ArrayList(rc.lines.get(i + 1).size());
+                String[] plainLine = plainLines[i + 1].split(" ");
+                for (int j = 0; j < plainLine.length; j++) {
+                    nextLine.add(plainLine[j]);
+                }
+            }
+
             ArrayList<Rhyme> curLineRhymes = rc.collection[i];
 
+            // Loop through rhyme phrase pairs
             for (Rhyme r : curLineRhymes) {
+                // First and last word of phrase A
                 int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
                 int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
 
-                // Append non-rhyming words first
-                if (firstWord != 0) {
-                    for (int j = 0; j < firstWord; j++) {
-                        textOutput.append(rc.lines.get(i).get(j).getPlainWord()).append(" ");
-                    }
-                }
+                curLine.add(firstWord + curLineAddedTags, styles[styleMod * 2]);
+                curLine.add(lastWord + 2 + curLineAddedTags, styles[styleMod * 2 + 1]);
 
-                // Apply opening tag for the style
-                textOutput.append(styles[styleMod * 2]);
-
-                for (int j = firstWord; j <= lastWord; j++) {
-                    textOutput.append(rc.lines.get(i).get(j).getPlainWord());
-                    if (j != lastWord) {
-                        textOutput.append(" ");
-                    }
-                }
-
-                // Apply closing tag for the style
-                textOutput.append(styles[styleMod * 2 + 1]);
+                curLineAddedTags += 2;
 
                 // Check if rhyme occurs on the same line
                 if (r.aStart.sameLine(r.bStart)) {
                     firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i), r.bEnd().syllable);
 
-                    // Append non-rhyming words first
-                    if (firstWord != 0) {
-                        for (int j = 0; j < firstWord; j++) {
-                            textOutput.append(rc.lines.get(i).get(j).getPlainWord()).append(" ");
-                        }
-                    }
+                    curLine.add(firstWord + curLineAddedTags, styles[styleMod * 2]);
+                    curLine.add(lastWord + 2 + curLineAddedTags, styles[styleMod * 2 + 1]);
 
-                    // Apply opening tag for the style
-                    textOutput.append(styles[styleMod * 2]);
-
-                    for (int j = firstWord; j <= lastWord; j++) {
-                        textOutput.append(rc.lines.get(i).get(j).getPlainWord());
-                        if (j != lastWord) {
-                            textOutput.append(" ");
-                        }
-                    }
-
-                    // Apply closing tag for the style
-                    textOutput.append(styles[styleMod * 2 + 1]);
+                    curLineAddedTags += 2;
                 } else {
                     firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
 
-                    textOutput.append(styles[styleMod * 2]);
+                    nextLine.add(firstWord + nextLineAddedTags, styles[styleMod * 2]);
+                    nextLine.add(lastWord + 2 + nextLineAddedTags, styles[styleMod * 2 + 1]);
 
-                    for (int k = firstWord; k <= lastWord; k++) {
-                        textOutput.append(rc.lines.get(i + 1).get(k).getPlainWord()).append(" ");
-                    }
-
-                    textOutput.append(styles[styleMod * 2 + 1]);
+                    nextLineAddedTags += 2;
                 }
 
                 styleMod = (styleMod + 1) % (styles.length / 2);  // Rotate through the styles
