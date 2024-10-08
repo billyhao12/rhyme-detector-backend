@@ -50,15 +50,6 @@ public class Controller {
         StringBuilder textOutput = new StringBuilder();
         int styleMod = 0;
 
-        ArrayList curLine = new ArrayList();
-
-        // size of ArrayList is number of words in first PLine
-        ArrayList nextLine = new ArrayList(rc.lines.get(0).size());
-        String[] firstPlainLine = plainLines[0].split(" ");
-        for (int i = 0; i < firstPlainLine.length; i++) {
-            nextLine.add(firstPlainLine[i]);
-        }
-
         String[] styles = {
                 "<b>", "</b>",    // Bold
                 "<i>", "</i>",    // Italic
@@ -69,18 +60,13 @@ public class Controller {
 
         // Loop through the lines in the rhyme collection
         for (int i = 0; i < rc.lines.size(); i++) {
-            curLine = nextLine;
-
-            // If we are not on the last line, prepare ArrayList for next line
-            if (rc.lines.size() > i + 1) {
-                nextLine = new ArrayList(rc.lines.get(i + 1).size());
-                String[] plainLine = plainLines[i + 1].split(" ");
-                for (int j = 0; j < plainLine.length; j++) {
-                    nextLine.add(plainLine[j]);
-                }
-            }
+            String[] curLine = plainLines[i].split(" ");
+            StringBuilder curLineOutput = new StringBuilder();
 
             ArrayList<Rhyme> curLineRhymes = rc.collection[i];
+
+            // Track positions where tags are inserted
+            boolean[] openTag = new boolean[curLine.length];
 
             // Loop through rhyme phrase pairs
             for (int j = 0; j < curLineRhymes.size(); j++) {
@@ -90,27 +76,43 @@ public class Controller {
                 int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
                 int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
 
-                curLine.set(firstWord, styles[styleMod * 2] + curLine.get(firstWord));
-                curLine.set(lastWord, curLine.get(lastWord) + styles[styleMod * 2 + 1]);
+                // Insert opening tag
+                if (!openTag[firstWord]) {
+                    curLine[firstWord] = styles[styleMod * 2] + curLine[firstWord];
+                    openTag[firstWord] = true;  // Mark that we've inserted an opening tag
+                }
+
+                // Insert closing tag
+                curLine[lastWord] += styles[styleMod * 2 + 1];
 
                 // Check if rhyme occurs on the same line
                 if (r.aStart.sameLine(r.bStart)) {
                     firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i), r.bEnd().syllable);
 
-                    curLine.set(firstWord, styles[styleMod * 2] + curLine.get(firstWord));
-                    curLine.set(lastWord, curLine.get(lastWord) + styles[styleMod * 2 + 1]);
+                    if (!openTag[firstWord]) {
+                        curLine[firstWord] = styles[styleMod * 2] + curLine[firstWord];
+                        openTag[firstWord] = true;
+                    }
+
+                    curLine[lastWord] += styles[styleMod * 2 + 1];
                 } else {
+                    // Handle rhymes across different lines
+                    String[] nextLine = plainLines[i + 1].split(" ");
                     firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
 
-                    nextLine.set(firstWord, styles[styleMod * 2] + curLine.get(firstWord));
-                    nextLine.set(lastWord, curLine.get(lastWord) + styles[styleMod * 2 + 1]);
+                    nextLine[firstWord] = styles[styleMod * 2] + nextLine[firstWord];
+                    nextLine[lastWord] += styles[styleMod * 2 + 1];
+
+                    // Replace the next line in the plainLines array with updated version
+                    plainLines[i + 1] = String.join(" ", nextLine);
                 }
 
                 styleMod = (styleMod + 1) % (styles.length / 2);  // Rotate through the styles
             }
 
+            // Append the current line with all the styles applied
             textOutput.append(String.join(" ", curLine));
             textOutput.append("\n");
         }
