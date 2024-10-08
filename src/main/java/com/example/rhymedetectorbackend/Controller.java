@@ -48,7 +48,6 @@ public class Controller {
         }
 
         StringBuilder textOutput = new StringBuilder();
-        String textOutput2 = "";
         int styleMod = 0;
 
         ArrayList curLine = new ArrayList();
@@ -101,6 +100,8 @@ public class Controller {
                 curLine.add(lastWord + 1 + curLineAddedTags, styles[styleMod * 2 + 1]);
                 curLineAddedTags += 1;
 
+                System.out.println("curLine size: " + curLine.size() + ", firstWord: " + firstWord + ", lastWord: " + lastWord);
+
                 // Check if rhyme occurs on the same line
                 if (r.aStart.sameLine(r.bStart)) {
                     firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
@@ -111,6 +112,8 @@ public class Controller {
 
                     curLine.add(lastWord + 1 + curLineAddedTags, styles[styleMod * 2 + 1]);
                     curLineAddedTags += 1;
+
+                    System.out.println("curLine size: " + curLine.size() + ", firstWord: " + firstWord + ", lastWord: " + lastWord);
                 } else {
                     firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
@@ -120,12 +123,14 @@ public class Controller {
 
                     nextLine.add(lastWord + 1 + nextLineAddedTags, styles[styleMod * 2 + 1]);
                     nextLineAddedTags += 1;
+
+                    System.out.println("nextLine size: " + nextLine.size() + ", firstWord: " + firstWord + ", lastWord: " + lastWord);
                 }
 
                 styleMod = (styleMod + 1) % (styles.length / 2);  // Rotate through the styles
             }
 
-            // Add a newline after each line
+            textOutput.append(String.join(" ", curLine));
             textOutput.append("\n");
         }
 
