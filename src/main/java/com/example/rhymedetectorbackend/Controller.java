@@ -15,6 +15,7 @@ import java.util.ArrayList;
 @RestController
 public class Controller {
 
+    // Finds the index of a word in a line based on a syllable index
     private int wordIndex(PLine pl, int sylIndex) {
         int ret = -1;
         int sylLoc = -1;
@@ -27,7 +28,7 @@ public class Controller {
     }
 
     @PostMapping("/rhymes/multisyllable")
-    public LyricsData highlightMultisyllableRhymes(@RequestBody LyricsData userInput) throws Exception {
+    public String highlightMultisyllableRhymes(@RequestBody LyricsData userInput) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
@@ -46,74 +47,88 @@ public class Controller {
             throw new BadRequestException("No lines in input text.");
         }
 
-        JTextPane txtOutput = new JTextPane();
-        txtOutput.setText("");
-
+        StringBuilder textOutput = new StringBuilder();
         int styleMod = 0;
-        SimpleAttributeSet[] curLine = new SimpleAttributeSet[0];
-        SimpleAttributeSet[] nextLine = new SimpleAttributeSet[rc.lines.get(0).size()];
-        for (int i = 0; i < nextLine.length; i++) {
-            nextLine[i] = new SimpleAttributeSet();
-        }
 
-        for (int i=0; i<rc.lines.size(); i++) {
-            curLine = nextLine;
-            if (rc.lines.size()>i+1) {
-                nextLine = new SimpleAttributeSet[rc.lines.get(i+1).size()];
-                for (int j=0; j<nextLine.length; j++) {
-                    nextLine[j] = new SimpleAttributeSet();
-                }
-            }
+        String[] styles = {
+                "<b>", "</b>",    // Bold
+                "<i>", "</i>",    // Italic
+                "<span style=\"color: red\">", "</span>",  // Red color
+                "<u>", "</u>",    // Underline
+                "<s>", "</s>"     // Strikethrough
+        };
 
+        for (int i = 0; i < rc.lines.size(); i++) {
             ArrayList<Rhyme> curLineRhymes = rc.collection[i];
 
-            SimpleAttributeSet[] attributes = new SimpleAttributeSet[5];
-            for (int j = 0; j < attributes.length; j++) {
-                attributes[j] = new SimpleAttributeSet();
-            }
+            for (Rhyme r : curLineRhymes) {
+                int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
+                int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
 
-            StyleConstants.setBold(attributes[0], true);
-            StyleConstants.setItalic(attributes[1], true);
-            // StyleConstants.setFontFamily(attributes[2], "Serif");
-            StyleConstants.setForeground(attributes[2], Color.red);
-            StyleConstants.setUnderline(attributes[3], true);
-            StyleConstants.setStrikeThrough(attributes[4], true);
-
-            for (int j = 0; j < curLineRhymes.size(); j++) {
-                Rhyme r = curLineRhymes.get(j);
-                int firstWord = wordIndex(rc.lines.get(i),r.aStart.syllable);
-                int lastWord = wordIndex(rc.lines.get(i),r.aEnd().syllable);
-                for (int k=firstWord; k<=lastWord; k++) {
-                    curLine[k].addAttributes(attributes[styleMod]);
+                // Append non-rhyming words first
+                if (firstWord != 0) {
+                    for (int j = 0; j < firstWord; j++) {
+                        textOutput.append(rc.lines.get(i).get(j).getPlainWord()).append(" ");
+                    }
                 }
+
+                // Apply opening tag for the style
+                textOutput.append(styles[styleMod * 2]);
+
+                for (int j = firstWord; j <= lastWord; j++) {
+                    textOutput.append(rc.lines.get(i).get(j).getPlainWord());
+                    if (j != lastWord) {
+                        textOutput.append(" ");
+                    }
+                }
+
+                // Apply closing tag for the style
+                textOutput.append(styles[styleMod * 2 + 1]);
+
+                // Check if rhyme occurs on the same line
                 if (r.aStart.sameLine(r.bStart)) {
-                    firstWord = wordIndex(rc.lines.get(i),r.bStart.syllable);
+                    firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i), r.bEnd().syllable);
-                    for (int k=firstWord; k<=lastWord; k++) {
-                        curLine[k].addAttributes(attributes[styleMod]);
+
+                    // Append non-rhyming words first
+                    if (firstWord != 0) {
+                        for (int j = 0; j < firstWord; j++) {
+                            textOutput.append(rc.lines.get(i).get(j).getPlainWord()).append(" ");
+                        }
                     }
+
+                    // Apply opening tag for the style
+                    textOutput.append(styles[styleMod * 2]);
+
+                    for (int j = firstWord; j <= lastWord; j++) {
+                        textOutput.append(rc.lines.get(i).get(j).getPlainWord());
+                        if (j != lastWord) {
+                            textOutput.append(" ");
+                        }
+                    }
+
+                    // Apply closing tag for the style
+                    textOutput.append(styles[styleMod * 2 + 1]);
                 } else {
-                    firstWord = wordIndex(rc.lines.get(i+1),r.bStart.syllable);
-                    lastWord = wordIndex(rc.lines.get(i+1),r.bEnd().syllable);
-                    for (int k=firstWord; k<=lastWord; k++) {
-                        nextLine[k].addAttributes(attributes[styleMod]);
+                    firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
+                    lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
+
+                    textOutput.append(styles[styleMod * 2]);
+
+                    for (int k = firstWord; k <= lastWord; k++) {
+                        textOutput.append(rc.lines.get(i + 1).get(k).getPlainWord()).append(" ");
                     }
+
+                    textOutput.append(styles[styleMod * 2 + 1]);
                 }
-                styleMod = (styleMod + 1) % attributes.length;
+
+                styleMod = (styleMod + 1) % (styles.length / 2);  // Rotate through the styles
             }
 
-            try {
-                Document d = txtOutput.getDocument();
-                for (int k=0; k<curLine.length; k++) {
-                    d.insertString(d.getLength(), rc.lines.get(i).get(k).getPlainWord() + " ", curLine[k]);
-                }
-                d.insertString(d.getLength(), "\n", new SimpleAttributeSet());
-                txtOutput.setDocument(d);
-            } catch (Exception ble) {
-//                JOptionPane.showMessageDialog(this, "Error writing to document." + ble.getMessage());
-            }
+            // Add a newline after each line
+            textOutput.append("\n");
         }
 
-        return userInput;
+        return textOutput.toString();
     }
 }
