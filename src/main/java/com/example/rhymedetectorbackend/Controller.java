@@ -67,15 +67,9 @@ public class Controller {
                 "<s>", "</s>"     // Strikethrough
         };
 
-        int curLineAddedTags = 0;
-        int nextLineAddedTags = 0;
-
         // Loop through the lines in the rhyme collection
         for (int i = 0; i < rc.lines.size(); i++) {
             curLine = nextLine;
-
-            curLineAddedTags = nextLineAddedTags;
-            nextLineAddedTags = 0;
 
             // If we are not on the last line, prepare ArrayList for next line
             if (rc.lines.size() > i + 1) {
@@ -96,37 +90,22 @@ public class Controller {
                 int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
                 int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
 
-                curLine.add(firstWord + curLineAddedTags, styles[styleMod * 2]);
-                curLineAddedTags += 1;
-
-                curLine.add(lastWord + 1 + curLineAddedTags, styles[styleMod * 2 + 1]);
-                curLineAddedTags += 1;
-
-                System.out.println("curLine size: " + curLine.size() + ", firstWord: " + firstWord + ", lastWord: " + lastWord);
+                curLine.set(firstWord, styles[styleMod * 2] + curLine.get(firstWord));
+                curLine.set(lastWord, curLine.get(lastWord) + styles[styleMod * 2 + 1]);
 
                 // Check if rhyme occurs on the same line
                 if (r.aStart.sameLine(r.bStart)) {
                     firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i), r.bEnd().syllable);
 
-                    curLine.add(firstWord + curLineAddedTags, styles[styleMod * 2]);
-                    curLineAddedTags += 1;
-
-                    curLine.add(lastWord + 1 + curLineAddedTags, styles[styleMod * 2 + 1]);
-                    curLineAddedTags += 1;
-
-                    System.out.println("curLine size: " + curLine.size() + ", firstWord: " + firstWord + ", lastWord: " + lastWord);
+                    curLine.set(firstWord, styles[styleMod * 2] + curLine.get(firstWord));
+                    curLine.set(lastWord, curLine.get(lastWord) + styles[styleMod * 2 + 1]);
                 } else {
                     firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
 
-                    nextLine.add(firstWord + nextLineAddedTags, styles[styleMod * 2]);
-                    nextLineAddedTags += 1;
-
-                    nextLine.add(lastWord + 1 + nextLineAddedTags, styles[styleMod * 2 + 1]);
-                    nextLineAddedTags += 1;
-
-                    System.out.println("nextLine size: " + nextLine.size() + ", firstWord: " + firstWord + ", lastWord: " + lastWord);
+                    nextLine.set(firstWord, styles[styleMod * 2] + curLine.get(firstWord));
+                    nextLine.set(lastWord, curLine.get(lastWord) + styles[styleMod * 2 + 1]);
                 }
 
                 styleMod = (styleMod + 1) % (styles.length / 2);  // Rotate through the styles
