@@ -27,8 +27,10 @@ public class Controller {
         return ret;
     }
 
+    public record StyledWord(String word, ArrayList<String> style) {}
+
     @PostMapping("/rhymes/multisyllable")
-    public String highlightMultisyllableRhymes(@RequestBody LyricsData userInput) throws Exception {
+    public ArrayList<StyledWord>[] highlightMultisyllableRhymes(@RequestBody LyricsData userInput) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
@@ -47,16 +49,21 @@ public class Controller {
             throw new BadRequestException("No lines in input text.");
         }
 
+        // Initialize data structure to send as a response
+        ArrayList<StyledWord>[] styledLyrics;
+        styledLyrics = new ArrayList[plainLines.length];
+        for (int i = 0; i < styledLyrics.length; i++) {
+            styledLyrics[i] = new ArrayList<>();
+            String[] curLine = plainLines[i].split(" ");
+
+            for (int j = 0; j < curLine.length; j++) {
+                styledLyrics[i].add(new StyledWord(curLine[j], new ArrayList<>()));
+            }
+        }
+
         StringBuilder textOutput = new StringBuilder();
         int styleMod = 0;
-
-        String[] styles = {
-                "<b>", "</b>",    // Bold
-                "<i>", "</i>",    // Italic
-                "<span style=\"color: red\">", "</span>",  // Red color
-                "<u>", "</u>",    // Underline
-                "<s>", "</s>"     // Strikethrough
-        };
+        String[] styles = { "bold", "italic", "red", "underline", "strikethrough" };
 
         // Loop through the lines in the rhyme collection
         for (int i = 0; i < rc.lines.size(); i++) {
@@ -76,47 +83,32 @@ public class Controller {
                 int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
                 int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
 
-                // Insert opening tag
-                if (!openTag[firstWord]) {
-                    curLine[firstWord] = styles[styleMod * 2] + curLine[firstWord];
-                    openTag[firstWord] = true;  // Mark that we've inserted an opening tag
+                for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
+                    styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
                 }
-
-                // Insert closing tag
-                curLine[lastWord] += styles[styleMod * 2 + 1];
 
                 // Check if rhyme occurs on the same line
                 if (r.aStart.sameLine(r.bStart)) {
                     firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i), r.bEnd().syllable);
 
-                    if (!openTag[firstWord]) {
-                        curLine[firstWord] = styles[styleMod * 2] + curLine[firstWord];
-                        openTag[firstWord] = true;
+                    for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
+                        styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
                     }
-
-                    curLine[lastWord] += styles[styleMod * 2 + 1];
                 } else {
                     // Handle rhymes across different lines
-                    String[] nextLine = plainLines[i + 1].split(" ");
                     firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
 
-                    nextLine[firstWord] = styles[styleMod * 2] + nextLine[firstWord];
-                    nextLine[lastWord] += styles[styleMod * 2 + 1];
-
-                    // Replace the next line in the plainLines array with updated version
-                    plainLines[i + 1] = String.join(" ", nextLine);
+                    for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
+                        styledLyrics[i + 1].get(wordIndex).style.add(styles[styleMod]);
+                    }
                 }
 
-                styleMod = (styleMod + 1) % (styles.length / 2);  // Rotate through the styles
+                styleMod =   (styleMod + 1) % styles.length; // Rotate through the styles
             }
-
-            // Append the current line with all the styles applied
-            textOutput.append(String.join(" ", curLine));
-            textOutput.append("\n");
         }
 
-        return textOutput.toString();
+        return styledLyrics;
     }
 }
