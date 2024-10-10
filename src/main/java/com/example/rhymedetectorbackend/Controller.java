@@ -5,11 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.swing.*;
-import javax.swing.text.Document;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import java.awt.*;
 import java.util.ArrayList;
 
 @RestController
@@ -50,6 +45,8 @@ public class Controller {
         }
 
         // Initialize data structure to send as a response
+            // Nested arrays represent lines in the lyrics
+            // Objects within nested arrays are StyledWord Records
         ArrayList<StyledWord>[] styledLyrics;
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
@@ -61,28 +58,23 @@ public class Controller {
             }
         }
 
-        StringBuilder textOutput = new StringBuilder();
+        // Define styles used to highlight rhymes
         int styleMod = 0;
         String[] styles = { "bold", "italic", "red", "underline", "strikethrough" };
 
         // Loop through the lines in the rhyme collection
         for (int i = 0; i < rc.lines.size(); i++) {
-            String[] curLine = plainLines[i].split(" ");
-            StringBuilder curLineOutput = new StringBuilder();
-
             ArrayList<Rhyme> curLineRhymes = rc.collection[i];
-
-            // Track positions where tags are inserted
-            boolean[] openTag = new boolean[curLine.length];
 
             // Loop through rhyme phrase pairs
             for (int j = 0; j < curLineRhymes.size(); j++) {
                 Rhyme r = curLineRhymes.get(j);
 
-                // First and last word of phrase A
+                // First and last word of rhyme phrase A
                 int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
                 int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
 
+                // Update the styling of each word contained in the rhyme phrase
                 for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                     styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
                 }
@@ -105,7 +97,8 @@ public class Controller {
                     }
                 }
 
-                styleMod =   (styleMod + 1) % styles.length; // Rotate through the styles
+                // Rotate through the styles
+                styleMod =   (styleMod + 1) % styles.length;
             }
         }
 
