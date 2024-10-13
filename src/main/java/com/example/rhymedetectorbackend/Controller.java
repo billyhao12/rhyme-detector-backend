@@ -97,7 +97,7 @@ public class Controller {
                 }
 
                 // Rotate through the styles
-                styleMod =   (styleMod + 1) % styles.length;
+                styleMod = (styleMod + 1) % styles.length;
             }
         }
 
