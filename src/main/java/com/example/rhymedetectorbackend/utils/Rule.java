@@ -1,4 +1,4 @@
-package com.example.rhymedetectorbackend;
+package com.example.rhymedetectorbackend.utils;
 
 
 public class Rule {

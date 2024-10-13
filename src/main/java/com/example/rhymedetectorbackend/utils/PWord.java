@@ -1,4 +1,4 @@
-package com.example.rhymedetectorbackend;
+package com.example.rhymedetectorbackend.utils;
 import java.util.ArrayList;
 
 public class PWord {

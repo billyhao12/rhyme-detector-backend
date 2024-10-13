@@ -1,9 +1,8 @@
-package com.example.rhymedetectorbackend;
+package com.example.rhymedetectorbackend.utils;
 
 
 import java.io.*;
 import java.util.ArrayList;
-import java.text.NumberFormat;
 
 //import Jama.Matrix;
 
