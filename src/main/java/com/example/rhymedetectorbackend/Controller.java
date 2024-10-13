@@ -26,7 +26,7 @@ public class Controller {
     public record StyledWord(String word, ArrayList<String> style) {}
 
     @PostMapping("/rhymes/multisyllable")
-    public ArrayList<StyledWord>[] highlightMultisyllableRhymes(@RequestBody LyricsData userInput) throws Exception {
+    public ArrayList<StyledWord>[] highlightMultisyllableRhymes(@RequestBody LyricsInput userInput) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);

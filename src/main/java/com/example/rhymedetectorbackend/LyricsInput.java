@@ -3,11 +3,11 @@ package com.example.rhymedetectorbackend;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class LyricsData {
+public class LyricsInput {
     private String lyrics;
 
     @JsonCreator
-    public LyricsData(@JsonProperty("lyrics") String lyrics) {
+    public LyricsInput(@JsonProperty("lyrics") String lyrics) {
         this.lyrics = lyrics;
     }
 
