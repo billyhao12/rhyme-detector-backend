@@ -23,8 +23,6 @@ public class Controller {
         return ret;
     }
 
-    public record StyledWord(String word, ArrayList<String> style) {}
-
     @PostMapping("/rhymes/multisyllable")
     public ArrayList<StyledWord>[] highlightMultisyllableRhymes(@RequestBody LyricsInput userInput) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
