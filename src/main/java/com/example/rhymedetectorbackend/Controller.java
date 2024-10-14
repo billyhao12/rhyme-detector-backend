@@ -24,14 +24,18 @@ public class Controller {
     }
 
     @PostMapping("/rhymes/multisyllable")
-    public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody LyricsInput userInput) throws Exception {
+    public ApiResponse highlightMultisyllableRhymes(@RequestBody LyricsInput lyricsInput) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
         Detector det = new Detector(sc);
         Transcriptor tr = new Transcriptor();
 
-        String[] plainLines = userInput.getLyrics().split("\n");
+        if (lyricsInput.getLyrics().isEmpty()) {
+            return ApiResponse.fail(lyricsInput, "No lyrics to highlight");
+        }
+
+        String[] plainLines = lyricsInput.getLyrics().split("\n");
 
         ArrayList<PLine> inLines = new ArrayList<PLine>();
         for (int i = 0; i < plainLines.length; i++) {
@@ -39,8 +43,10 @@ public class Controller {
         }
         RhymeCollection rc = det.getRhymes(inLines);
         rc.lines = inLines;
+
+        // I've never encountered a situation where this is true
         if (inLines.isEmpty()) {
-            throw new BadRequestException("No lines in input text.");
+            return ApiResponse.fail(lyricsInput, "No lines in input text");
         }
 
         // Initialize data structure to send as a response
