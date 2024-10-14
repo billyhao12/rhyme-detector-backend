@@ -2,6 +2,7 @@ package com.example.rhymedetectorbackend;
 
 import com.example.rhymedetectorbackend.utils.*;
 import org.apache.coyote.BadRequestException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +11,11 @@ import java.util.ArrayList;
 
 @RestController
 public class Controller {
+
+    @ExceptionHandler(Exception.class)
+    public ApiResponse<Void> handleException(Exception ex) {
+        return ApiResponse.error(null, ex.getMessage(), null);
+    }
 
     // Finds the index of a word in a line based on a syllable index
     private int wordIndex(PLine pl, int sylIndex) {
@@ -31,7 +37,7 @@ public class Controller {
         Detector det = new Detector(sc);
         Transcriptor tr = new Transcriptor();
 
-        if (lyricsInput.getLyrics().isEmpty()) {
+        if (lyricsInput.getLyrics() == null || lyricsInput.getLyrics().isEmpty()) {
             return ApiResponse.fail(lyricsInput, "No lyrics to highlight");
         }
 
