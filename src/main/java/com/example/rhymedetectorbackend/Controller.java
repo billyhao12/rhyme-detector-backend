@@ -24,7 +24,7 @@ public class Controller {
     }
 
     @PostMapping("/rhymes/multisyllable")
-    public ArrayList<StyledWord>[] highlightMultisyllableRhymes(@RequestBody LyricsInput userInput) throws Exception {
+    public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody LyricsInput userInput) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
@@ -101,6 +101,7 @@ public class Controller {
             }
         }
 
-        return styledLyrics;
+        MultisyllableRhymeData multisyllableRhymeData = new MultisyllableRhymeData(styledLyrics);
+        return ApiResponse.success(multisyllableRhymeData);
     }
 }
