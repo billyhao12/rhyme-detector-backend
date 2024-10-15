@@ -12,7 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 class RhymeDetectorBackendApplicationTests {
 
     @Autowired
-    private Controller controller;
+    private RhymeDetectorBackendApplication rhymeDetectorBackendApplication;
 
     @LocalServerPort
     private int port;
@@ -22,7 +22,7 @@ class RhymeDetectorBackendApplicationTests {
 
     @Test
     void contextLoads() {
-        assertThat(controller).isNotNull();
+        assertThat(rhymeDetectorBackendApplication).isNotNull();
     }
 
     @Test
