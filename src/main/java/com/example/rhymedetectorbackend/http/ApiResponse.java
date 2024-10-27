@@ -3,7 +3,7 @@
  * Format is based on JSend (https://github.com/omniti-labs/jsend).
  */
 
-package com.example.rhymedetectorbackend;
+package com.example.rhymedetectorbackend.http;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

@@ -1,5 +1,7 @@
 package com.example.rhymedetectorbackend;
 
+import com.example.rhymedetectorbackend.http.ApiResponse;
+import com.example.rhymedetectorbackend.http.BadRequestException;
 import com.example.rhymedetectorbackend.utils.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,11 +10,6 @@ import java.util.ArrayList;
 @CrossOrigin(origins = { "http://localhost:3000", "https://rhyme-detector.vercel.app" })
 @RestController
 public class Controller {
-
-    @ExceptionHandler(Exception.class)
-    public ApiResponse<Void> handleException(Exception ex) {
-        return ApiResponse.error(null, ex.getMessage(), null);
-    }
 
     // Finds the index of a word in a line based on a syllable index
     private int wordIndex(PLine pl, int sylIndex) {
@@ -27,7 +24,7 @@ public class Controller {
     }
 
     @PostMapping("/rhymes/multisyllable")
-    public ApiResponse highlightMultisyllableRhymes(@RequestBody LyricsInput lyricsInput) throws Exception {
+    public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody LyricsInput lyricsInput) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
@@ -35,7 +32,7 @@ public class Controller {
         Transcriptor tr = new Transcriptor();
 
         if (lyricsInput.getLyrics() == null || lyricsInput.getLyrics().isEmpty()) {
-            return ApiResponse.fail(lyricsInput, "No lyrics to highlight");
+            throw new BadRequestException("No lyrics to highlight");
         }
 
         String[] plainLines = lyricsInput.getLyrics().split("\n");
@@ -49,7 +46,7 @@ public class Controller {
 
         // I've never encountered a situation where this is true
         if (inLines.isEmpty()) {
-            return ApiResponse.fail(lyricsInput, "No lines in input text");
+            throw new BadRequestException("No lines in input text");
         }
 
         // Initialize data structure to send as a response
