@@ -1,5 +1,7 @@
 package com.example.rhymedetectorbackend;
 
+import com.example.rhymedetectorbackend.http.ApiResponse;
+import com.example.rhymedetectorbackend.http.BadRequestException;
 import com.example.rhymedetectorbackend.utils.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,11 +10,6 @@ import java.util.ArrayList;
 @CrossOrigin(origins = { "http://localhost:3000", "https://rhyme-detector.vercel.app" })
 @RestController
 public class Controller {
-
-    @ExceptionHandler(Exception.class)
-    public ApiResponse<Void> handleException(Exception ex) {
-        return ApiResponse.error(null, ex.getMessage(), null);
-    }
 
     // Finds the index of a word in a line based on a syllable index
     private int wordIndex(PLine pl, int sylIndex) {
@@ -27,18 +24,19 @@ public class Controller {
     }
 
     @PostMapping("/rhymes/multisyllable")
-    public ApiResponse highlightMultisyllableRhymes(@RequestBody LyricsInput lyricsInput) throws Exception {
+    public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
         Detector det = new Detector(sc);
         Transcriptor tr = new Transcriptor();
 
-        if (lyricsInput.getLyrics() == null || lyricsInput.getLyrics().isEmpty()) {
-            return ApiResponse.fail(lyricsInput, "No lyrics to highlight");
+        if (lyrics.getLyrics() == null || lyrics.getLyrics().isEmpty()) {
+            Lyrics errorResponse = new Lyrics("No lyrics to highlight");
+            throw new BadRequestException(errorResponse);
         }
 
-        String[] plainLines = lyricsInput.getLyrics().split("\n");
+        String[] plainLines = lyrics.getLyrics().split("\n");
 
         ArrayList<PLine> inLines = new ArrayList<PLine>();
         for (int i = 0; i < plainLines.length; i++) {
@@ -49,7 +47,8 @@ public class Controller {
 
         // I've never encountered a situation where this is true
         if (inLines.isEmpty()) {
-            return ApiResponse.fail(lyricsInput, "No lines in input text");
+            Lyrics errorResponse = new Lyrics("No lines in input text");
+            throw new BadRequestException(errorResponse);
         }
 
         // Initialize data structure to send as a response

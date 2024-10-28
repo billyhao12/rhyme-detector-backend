@@ -3,7 +3,7 @@
  * Format is based on JSend (https://github.com/omniti-labs/jsend).
  */
 
-package com.example.rhymedetectorbackend;
+package com.example.rhymedetectorbackend.http;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -28,8 +28,8 @@ public class ApiResponse<T> {
     }
 
     // Fail response
-    public static <T> ApiResponse<T> fail(T data, String message) {
-        return new ApiResponse<>("fail", data, message, null);
+    public static <T> ApiResponse<T> fail(T data) {
+        return new ApiResponse<>("fail", data, null, null);
     }
 
     // Error response
