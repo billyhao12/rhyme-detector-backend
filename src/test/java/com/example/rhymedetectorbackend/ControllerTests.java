@@ -44,4 +44,21 @@ public class ControllerTests {
         // Assert that the responses are equal
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
+
+    @Test
+    void shouldFailWhenPassedEmptyString() throws Exception {
+        Lyrics lyrics = new Lyrics("");
+
+        String mockJsonResponse = "{\"status\": \"fail\",\"data\": {\"lyrics\": \"No lyrics to highlight\"}}";
+
+        // Convert mock JSON response to a Map
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> expectedResponse = objectMapper.readValue(mockJsonResponse, Map.class);
+
+        // Perform POST request and get the response
+        Map<String, Object> actualResponse = restTemplate.postForObject("http://localhost:" + port + "/rhymes/multisyllable", lyrics, Map.class);
+
+        // Assert that the responses are equal
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
 }
