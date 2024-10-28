@@ -28,8 +28,8 @@ public class ApiResponse<T> {
     }
 
     // Fail response
-    public static <T> ApiResponse<T> fail(T data, String message) {
-        return new ApiResponse<>("fail", data, message, null);
+    public static <T> ApiResponse<T> fail(T data) {
+        return new ApiResponse<>("fail", data, null, null);
     }
 
     // Error response

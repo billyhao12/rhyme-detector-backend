@@ -1,5 +1,6 @@
 package com.example.rhymedetectorbackend.http;
 
+import com.example.rhymedetectorbackend.Lyrics;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,8 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBadRequestException(BadRequestException ex) {
-        ApiResponse<Void> response = ApiResponse.fail(null, ex.getMessage());
+    public ResponseEntity<ApiResponse<Lyrics>> handleBadRequestException(BadRequestException ex) {
+        ApiResponse<Lyrics> response = ApiResponse.fail(ex.getErrorData());
         return ResponseEntity.badRequest().body(response);
     }
 }
