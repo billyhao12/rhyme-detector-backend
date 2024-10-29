@@ -47,6 +47,12 @@ jobs:
     # - name: Build with Gradle 8.9
     #   run: gradle build
 
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: build/reports/tests/test/index.html
+
   dependency-submission:
 
     runs-on: ubuntu-latest
