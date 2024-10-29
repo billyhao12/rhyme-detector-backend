@@ -49,7 +49,7 @@ public class ControllerTests {
     void shouldFailWhenPassedEmptyString() throws Exception {
         Lyrics lyrics = new Lyrics("");
 
-        String mockJsonResponse = "{\"status\": \"fail\",\"data\": {\"lyrics\": \"No lyrics to highlight\"}}";
+        String mockJsonResponse = "{\"status\": \"fail\",\"data\": {\"lyrics\": \"No lyrics\"}}";
 
         // Convert mock JSON response to a Map
         ObjectMapper objectMapper = new ObjectMapper();
