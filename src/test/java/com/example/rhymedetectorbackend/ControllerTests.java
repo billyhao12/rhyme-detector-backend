@@ -1,3 +1,7 @@
+/**
+ * This tests that the endpoints in the Controller are behaving as expected.
+ */
+
 package com.example.rhymedetectorbackend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +50,7 @@ public class ControllerTests {
     }
 
     @Test
-    void shouldFailWhenPassedEmptyString() throws Exception {
+    void multisyllableEndpointShouldFailWhenPassedEmptyString() throws Exception {
         Lyrics lyrics = new Lyrics("");
 
         String mockJsonResponse = "{\"status\": \"fail\",\"data\": {\"lyrics\": \"No lyrics to highlight\"}}";

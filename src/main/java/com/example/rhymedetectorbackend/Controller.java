@@ -1,8 +1,13 @@
+/**
+ * This Controller class provides endpoints that can be called to
+ * provide highlighting data for different types of rhymes.
+ */
+
 package com.example.rhymedetectorbackend;
 
 import com.example.rhymedetectorbackend.http.ApiResponse;
 import com.example.rhymedetectorbackend.http.BadRequestException;
-import com.example.rhymedetectorbackend.utils.*;
+import com.example.rhymedetectorbackend.lib.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;

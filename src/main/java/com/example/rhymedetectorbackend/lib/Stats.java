@@ -1,4 +1,4 @@
-package com.example.rhymedetectorbackend.utils;
+package com.example.rhymedetectorbackend.lib;
 
 
 import java.io.*;
