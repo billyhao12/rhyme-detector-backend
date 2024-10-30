@@ -8,6 +8,8 @@ package com.example.rhymedetectorbackend;
 import com.example.rhymedetectorbackend.http.ApiResponse;
 import com.example.rhymedetectorbackend.http.BadRequestException;
 import com.example.rhymedetectorbackend.lib.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ public class Controller {
         return ret;
     }
 
+    @Operation(description = "Highlights multisyllable rhymes")
+    @ApiResponses(value = { @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "success") })
     @PostMapping("/rhymes/multisyllable")
     public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
