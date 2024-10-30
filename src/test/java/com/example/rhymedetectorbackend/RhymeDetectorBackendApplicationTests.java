@@ -1,3 +1,8 @@
+/**
+ * This file tests that the app is able to start.
+ * It also tests that the "/hello" endpoint is working.
+ */
+
 package com.example.rhymedetectorbackend;
 
 import static org.assertj.core.api.Assertions.assertThat;
