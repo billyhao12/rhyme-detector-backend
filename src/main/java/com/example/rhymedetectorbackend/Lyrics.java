@@ -1,3 +1,8 @@
+/**
+ * This is a basic Lyrics class that contains one "lyrics" key
+ * that consists of a String.
+ */
+
 package com.example.rhymedetectorbackend;
 
 import com.fasterxml.jackson.annotation.JsonCreator;

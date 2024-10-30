@@ -1,3 +1,8 @@
+/**
+ * This class is a global exception handler that
+ * defines responses for various exception types.
+ */
+
 package com.example.rhymedetectorbackend.http;
 
 import com.example.rhymedetectorbackend.Lyrics;

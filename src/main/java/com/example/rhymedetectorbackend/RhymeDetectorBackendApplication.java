@@ -1,3 +1,8 @@
+/**
+ * This is the main application. Run this class to start the server.
+ * It contains a basic "/hello" endpoint.
+ */
+
 package com.example.rhymedetectorbackend;
 
 import org.springframework.boot.SpringApplication;

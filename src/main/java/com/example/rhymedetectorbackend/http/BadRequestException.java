@@ -1,3 +1,8 @@
+/**
+ * This class defines a format of the data that will be returned
+ * when a bad request is sent from the client.
+ */
+
 package com.example.rhymedetectorbackend.http;
 
 import com.example.rhymedetectorbackend.Lyrics;

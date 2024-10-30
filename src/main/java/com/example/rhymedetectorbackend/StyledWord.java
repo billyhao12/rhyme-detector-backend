@@ -1,3 +1,8 @@
+/**
+ * The StyledWord class contains the word and a style array that lists the styles applied for the word.
+ * For example, the word "heavy" can have styles "bold", "underline", and "strikethrough".
+ */
+
 package com.example.rhymedetectorbackend;
 
 import java.util.ArrayList;
