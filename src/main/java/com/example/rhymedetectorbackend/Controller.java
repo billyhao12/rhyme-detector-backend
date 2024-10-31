@@ -7,6 +7,9 @@ package com.example.rhymedetectorbackend;
 
 import com.example.rhymedetectorbackend.lib.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +52,51 @@ public class Controller {
         return ret;
     }
 
-    @Operation(description = "Highlights multisyllable rhymes")
-    @ApiResponses(value = { @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "success") })
+    @Operation(
+            description = "Highlights multisyllable rhymes",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Lyrics input for highlighting multisyllable rhymes",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Lyrics.class),
+                            examples = @ExampleObject(value = """
+                            {
+                                "lyrics": "Hello world\\nThis is a test"
+                            }
+                            """)
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                            {
+                                "status": "success",
+                                "data": {
+                                    "lyrics": [
+                                        [
+                                            {"word": "Hello", "style": ["bold"]},
+                                            {"word": "world", "style": ["bold, italic"]}
+                                        ],
+                                        [
+                                            {"word": "This", "style": ["bold"]},
+                                            {"word": "is", "style": ["bold, italic"]},
+                                            {"word": "a", "style": []},
+                                            {"word": "test", "style": []}
+                                        ]
+                                    ]
+                                }
+                            }
+                            """)
+                    )
+            )
+    })
     @PostMapping("/rhymes/multisyllable")
     public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
