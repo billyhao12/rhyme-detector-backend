@@ -60,11 +60,25 @@ public class Controller {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = Lyrics.class),
-                            examples = @ExampleObject(value = """
-                            {
-                                "lyrics": "Hello world\\nThis is a test"
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Valid Request",
+                                            value = """
+                                            {
+                                                "lyrics": "Hello world\\nThis is a test"
+                                            }
+                                            """
+                                    ),
+                                    @ExampleObject(
+                                            name = "Invalid Request",
+                                            description = "Example of an invalid request body with empty lyrics",
+                                            value = """
+                                            {
+                                                "lyrics": ""
+                                            }
+                                            """
+                                    )
                             }
-                            """)
                     )
             )
     )
