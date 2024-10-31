@@ -6,7 +6,7 @@ This is a Spring Boot application that provides endpoints a user can call to see
 * Spring Boot v3.3.4
 * Gradle
 * Java v23
-* Deployed to Heroku at https://gentle-sea-43460-28af4b6acbee.herokuapp.com/
+* Deployed to Heroku at https://rhyme-detector-backend-4cea028cb9ab.herokuapp.com/
 * Using [SpringDoc OpenAPI Starter WebMVC UI](https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui) to generate a Swagger doc
   - See Swagger doc at `/swagger-ui/index.html` endpoint
 
