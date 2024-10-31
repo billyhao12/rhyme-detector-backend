@@ -5,8 +5,6 @@
 
 package com.example.rhymedetectorbackend;
 
-import com.example.rhymedetectorbackend.http.ApiResponse;
-import com.example.rhymedetectorbackend.http.BadLyricsException;
 import com.example.rhymedetectorbackend.lib.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,6 +17,18 @@ import java.util.ArrayList;
 @CrossOrigin(origins = { "http://localhost:3000", "https://rhyme-detector.vercel.app" })
 @RestController
 public class Controller {
+
+    public static class BadLyricsException extends RuntimeException {
+        private final Lyrics lyrics;
+
+        public BadLyricsException(Lyrics lyrics) {
+            this.lyrics = lyrics;
+        }
+
+        public Lyrics getErrorData() {
+            return lyrics;
+        }
+    }
 
     @ExceptionHandler(BadLyricsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
