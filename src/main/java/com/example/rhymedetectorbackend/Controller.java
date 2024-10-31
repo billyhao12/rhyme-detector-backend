@@ -95,6 +95,22 @@ public class Controller {
                             }
                             """)
                     )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Bad Request - Empty lyrics",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                            {
+                                "status": "fail",
+                                "data": {
+                                    "lyrics": "No lyrics to highlight"
+                                }
+                            }
+                            """)
+                    )
             )
     })
     @PostMapping("/rhymes/multisyllable")
