@@ -5,11 +5,11 @@
 
 package com.example.rhymedetectorbackend;
 
-import com.example.rhymedetectorbackend.http.ApiResponse;
-import com.example.rhymedetectorbackend.http.BadRequestException;
 import com.example.rhymedetectorbackend.lib.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -17,6 +17,25 @@ import java.util.ArrayList;
 @CrossOrigin(origins = { "http://localhost:3000", "https://rhyme-detector.vercel.app" })
 @RestController
 public class Controller {
+
+    public static class BadLyricsException extends RuntimeException {
+        private final Lyrics lyrics;
+
+        public BadLyricsException(Lyrics lyrics) {
+            this.lyrics = lyrics;
+        }
+
+        public Lyrics getErrorData() {
+            return lyrics;
+        }
+    }
+
+    @ExceptionHandler(BadLyricsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Lyrics>> handleBadLyricsException(BadLyricsException ex) {
+        ApiResponse<Lyrics> response = ApiResponse.fail(ex.getErrorData());
+        return ResponseEntity.badRequest().body(response);
+    }
 
     // Finds the index of a word in a line based on a syllable index
     private int wordIndex(PLine pl, int sylIndex) {
@@ -42,7 +61,7 @@ public class Controller {
 
         if (lyrics.getLyrics() == null || lyrics.getLyrics().isEmpty()) {
             Lyrics errorResponse = new Lyrics("No lyrics to highlight");
-            throw new BadRequestException(errorResponse);
+            throw new BadLyricsException(errorResponse);
         }
 
         String[] plainLines = lyrics.getLyrics().split("\n");
@@ -57,7 +76,7 @@ public class Controller {
         // I've never encountered a situation where this is true
         if (inLines.isEmpty()) {
             Lyrics errorResponse = new Lyrics("No lines in input text");
-            throw new BadRequestException(errorResponse);
+            throw new BadLyricsException(errorResponse);
         }
 
         // Initialize data structure to send as a response
