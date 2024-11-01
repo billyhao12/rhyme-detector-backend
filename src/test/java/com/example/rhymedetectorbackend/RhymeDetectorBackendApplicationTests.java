@@ -34,4 +34,9 @@ class RhymeDetectorBackendApplicationTests {
     void shouldSayHello() throws Exception {
         assertThat(restTemplate.getForObject("http://localhost:" + port + "/hello", String.class)).isEqualTo("Hello World!");
     }
+
+    @Test
+    void shouldSayHelloWithName() throws Exception {
+        assertThat(restTemplate.getForObject("http://localhost:" + port + "/hello?myName=Alice", String.class)).isEqualTo("Hello Alice!");
+    }
 }
