@@ -144,6 +144,7 @@ public class Controller {
 
         ArrayList<PLine> inLines = new ArrayList<PLine>();
         for (int i = 0; i < plainLines.length; i++) {
+            // inLines contain phonemes for each line
             inLines.add(tr.transcribe(plainLines[i]));
         }
         RhymeCollection rc = det.getRhymes(inLines);
