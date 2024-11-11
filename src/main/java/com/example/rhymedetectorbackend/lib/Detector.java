@@ -22,6 +22,8 @@ public class Detector {
     private int size2;
     private int curLineNum;
 
+    public Detector() {}
+
     public Detector(Scoring sc) {
         scor = sc;
     }

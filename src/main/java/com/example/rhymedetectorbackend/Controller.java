@@ -52,6 +52,28 @@ public class Controller {
         return ret;
     }
 
+    @PostMapping("/rhymes/monosyllable")
+    public ApiResponse<RhymeData> highlightMonosyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
+        Detector detector = new Detector();
+
+        /**
+         * Returning mock data for now
+         */
+        ArrayList<String> exampleStyleArray = new ArrayList<>();
+        exampleStyleArray.add("highlight");
+        StyledWord exampleStyledWord = new StyledWord("word", exampleStyleArray);
+
+        ArrayList<StyledWord> styledWords = new ArrayList<>();
+        styledWords.add(exampleStyledWord);
+        styledWords.add(exampleStyledWord);
+
+        ArrayList<StyledWord>[] exampleLyrics = new ArrayList[1];
+        exampleLyrics[0] = styledWords;
+
+        RhymeData placeholderRhymeData = new RhymeData(exampleLyrics);
+        return ApiResponse.success(placeholderRhymeData);
+    }
+
     @Operation(
             description = "Highlights multisyllable rhymes",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -216,27 +238,5 @@ public class Controller {
 
         RhymeData multisyllableRhymeData = new RhymeData(styledLyrics);
         return ApiResponse.success(multisyllableRhymeData);
-    }
-
-    @PostMapping("/rhymes/monosyllable")
-    public ApiResponse<RhymeData> highlightMonosyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
-
-
-        /**
-         * Returning mock data for now
-         */
-        ArrayList<String> exampleStyleArray = new ArrayList<>();
-        exampleStyleArray.add("highlight");
-        StyledWord exampleStyledWord = new StyledWord("word", exampleStyleArray);
-
-        ArrayList<StyledWord> styledWords = new ArrayList<>();
-        styledWords.add(exampleStyledWord);
-        styledWords.add(exampleStyledWord);
-
-        ArrayList<StyledWord>[] exampleLyrics = new ArrayList[1];
-        exampleLyrics[0] = styledWords;
-
-        RhymeData placeholderRhymeData = new RhymeData(exampleLyrics);
-        return ApiResponse.success(placeholderRhymeData);
     }
 }
