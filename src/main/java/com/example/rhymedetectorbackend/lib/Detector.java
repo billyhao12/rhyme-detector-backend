@@ -28,8 +28,32 @@ public class Detector {
         scor = sc;
     }
 
-    public RhymeCollection getRhymes(ArrayList<PLine> pls) {
+    public RhymeCollection getMonoSyllableRhymes(ArrayList<PLine> pLines) {
+       RhymeCollection rhymeCollection = new RhymeCollection(pLines);
+
+      // Detect rhymes between pairs of lines
+      // When a word rhymes with multiple words, keep latest Rhyme
+
+      // Loop through pLines
+      for (int i = 0; i < pLines.size(); i++) {
+          ArrayList<Syllable> lastLine;
+
+          if (i > 0) {
+              lastLine = pLines.get(i - 1).getSyllables(false);
+          } else {
+              lastLine = new ArrayList<Syllable>();
+          }
+
+          ArrayList<Syllable> currentLine = pLines.get(i).getSyllables(false);
+      }
+
+      return rhymeCollection;
+    }
+
+    public RhymeCollection getMultisyllableRhymes(ArrayList<PLine> pls) {
         RhymeCollection rc = new RhymeCollection(pls);
+
+        // Loops through pLines
         for (int i=0; i<pls.size(); i++) {
             ArrayList<Syllable> lastLine;
             if (i>0) {
@@ -45,6 +69,7 @@ public class Detector {
             mono = new boolean[size1+size2];
             anchor = new boolean[size1+size2];
 
+            // For loops with "j" loop through pWords
             for (int j=0; j<size1; j++) {
                 Syllable sylJ = lastLine.get(j);
                 if (sylJ.getStress()>0) { // || j==size1-1) {

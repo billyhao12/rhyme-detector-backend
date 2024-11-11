@@ -169,7 +169,7 @@ public class Controller {
             // inLines contain phonemes for each line
             inLines.add(tr.transcribe(plainLines[i]));
         }
-        RhymeCollection rc = det.getRhymes(inLines);
+        RhymeCollection rc = det.getMultisyllableRhymes(inLines);
         rc.lines = inLines;
 
         // I've never encountered a situation where this is true
