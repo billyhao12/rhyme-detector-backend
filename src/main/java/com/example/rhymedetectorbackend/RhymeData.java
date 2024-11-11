@@ -1,5 +1,5 @@
 /**
- * MultisyllableRhymeData is the response data returned from the "/rhymes/multisyllable" endpoint.
+ * RhymeData is the response returned from both API endpoints.
  * The "lyrics" key here consists of an array of ArrayLists that defines style information for each word.
  */
 
@@ -7,10 +7,10 @@ package com.example.rhymedetectorbackend;
 
 import java.util.ArrayList;
 
-public class MultisyllableRhymeData {
+public class RhymeData {
     ArrayList<StyledWord>[] lyrics;
 
-    public MultisyllableRhymeData(ArrayList<StyledWord>[] lyrics) {
+    public RhymeData(ArrayList<StyledWord>[] lyrics) {
         this.lyrics = lyrics;
     }
 

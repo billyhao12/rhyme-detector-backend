@@ -128,7 +128,7 @@ public class Controller {
             )
     })
     @PostMapping("/rhymes/multisyllable")
-    public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
+    public ApiResponse<RhymeData> highlightMultisyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
@@ -214,7 +214,24 @@ public class Controller {
             }
         }
 
-        MultisyllableRhymeData multisyllableRhymeData = new MultisyllableRhymeData(styledLyrics);
+        RhymeData multisyllableRhymeData = new RhymeData(styledLyrics);
         return ApiResponse.success(multisyllableRhymeData);
+    }
+
+    @PostMapping("/rhymes/monosyllable")
+    public ApiResponse<RhymeData> highlightMonosyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
+        ArrayList<String> exampleStyleArray = new ArrayList<>();
+        exampleStyleArray.add("highlight");
+        StyledWord exampleStyledWord = new StyledWord("word", exampleStyleArray);
+
+        ArrayList<StyledWord> styledWords = new ArrayList<>();
+        styledWords.add(exampleStyledWord);
+        styledWords.add(exampleStyledWord);
+
+        ArrayList<StyledWord>[] exampleLyrics = new ArrayList[1];
+        exampleLyrics[0] = styledWords;
+
+        RhymeData placeholderRhymeData = new RhymeData(exampleLyrics);
+        return ApiResponse.success(placeholderRhymeData);
     }
 }
