@@ -220,6 +220,11 @@ public class Controller {
 
     @PostMapping("/rhymes/monosyllable")
     public ApiResponse<RhymeData> highlightMonosyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
+
+
+        /**
+         * Returning mock data for now
+         */
         ArrayList<String> exampleStyleArray = new ArrayList<>();
         exampleStyleArray.add("highlight");
         StyledWord exampleStyledWord = new StyledWord("word", exampleStyleArray);
