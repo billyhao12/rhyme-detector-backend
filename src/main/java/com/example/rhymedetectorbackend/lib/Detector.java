@@ -28,22 +28,34 @@ public class Detector {
         scor = sc;
     }
 
-    public RhymeCollection getMonoSyllableRhymes(ArrayList<PLine> pLines) {
+    public RhymeCollection getMonosyllableRhymes(ArrayList<PLine> pLines) {
        RhymeCollection rhymeCollection = new RhymeCollection(pLines);
 
       // Detect rhymes between pairs of lines
 
       // Loop through pLines
-      for (int i = 0; i < pLines.size(); i++) {
-          ArrayList<Syllable> lastLine;
+      for (int currentPLineIndex = 0; currentPLineIndex < pLines.size(); currentPLineIndex++) {
+          ArrayList<Syllable> lastLineSyllables;
 
-          if (i > 0) {
-              lastLine = pLines.get(i - 1).getSyllables(false);
+          if (currentPLineIndex > 0) {
+              lastLineSyllables = pLines.get(currentPLineIndex - 1).getSyllables(false);
           } else {
-              lastLine = new ArrayList<Syllable>();
+              lastLineSyllables = new ArrayList<Syllable>();
           }
 
-          ArrayList<Syllable> currentLine = pLines.get(i).getSyllables(false);
+          ArrayList<Syllable> curLineSyllables = pLines.get(currentPLineIndex).getSyllables(false);
+
+          if (lastLineSyllables.isEmpty()) continue;
+
+          // Find rhymes by comparing syllables between lines
+          for (int lastLineSyllableIndex = 0; lastLineSyllableIndex < lastLineSyllables.size(); lastLineSyllableIndex++) {
+              for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
+                  if (lastLineSyllables.get(lastLineSyllableIndex).perfectlyRhymesWith(curLineSyllables.get(curLineSyllableIndex))) {
+                     Rhyme rhyme = new Rhyme(currentPLineIndex - 1, lastLineSyllableIndex, currentPLineIndex, curLineSyllableIndex);
+                     rhymeCollection.addRhyme(rhyme);
+                  }
+              }
+          }
       }
 
       return rhymeCollection;
