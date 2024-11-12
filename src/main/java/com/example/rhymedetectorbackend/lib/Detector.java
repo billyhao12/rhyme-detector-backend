@@ -32,7 +32,6 @@ public class Detector {
        RhymeCollection rhymeCollection = new RhymeCollection(pLines);
 
       // Detect rhymes between pairs of lines
-      // When a word rhymes with multiple words, keep latest Rhyme
 
       // Loop through pLines
       for (int i = 0; i < pLines.size(); i++) {
