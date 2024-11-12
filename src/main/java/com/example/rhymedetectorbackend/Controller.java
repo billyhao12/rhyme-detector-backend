@@ -55,6 +55,28 @@ public class Controller {
     @PostMapping("/rhymes/monosyllable")
     public ApiResponse<RhymeData> highlightMonosyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
         Detector detector = new Detector();
+        Transcriptor transcriptor = new Transcriptor();
+
+        if (lyrics.getLyrics() == null || lyrics.getLyrics().isEmpty()) {
+            Lyrics errorResponse = new Lyrics("No lyrics to highlight");
+            throw new BadLyricsException(errorResponse);
+        }
+
+        String[] plainLines = lyrics.getLyrics().split("\n");
+
+        ArrayList<PLine> inLines = new ArrayList<PLine>();
+        for (int i = 0; i < plainLines.length; i++) {
+            // inLines contain phonemes for each line
+            inLines.add(transcriptor.transcribe(plainLines[i]));
+        }
+        RhymeCollection rhymeCollection = detector.getMonosyllableRhymes(inLines);
+        rhymeCollection.lines = inLines;
+
+        // I've never encountered a situation where this is true
+        if (inLines.isEmpty()) {
+            Lyrics errorResponse = new Lyrics("No lines in input text");
+            throw new BadLyricsException(errorResponse);
+        }
 
         /**
          * Returning mock data for now
