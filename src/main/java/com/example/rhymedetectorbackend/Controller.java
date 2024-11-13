@@ -78,22 +78,74 @@ public class Controller {
             throw new BadLyricsException(errorResponse);
         }
 
+        // Initialize data structure to send as a response
+        // Nested arrays represent lines in the lyrics
+        // Objects within nested arrays are StyledWord objects
+        ArrayList<StyledWord>[] styledLyrics;
+        styledLyrics = new ArrayList[plainLines.length];
+        for (int i = 0; i < styledLyrics.length; i++) {
+            styledLyrics[i] = new ArrayList<>();
+            String[] curLine = plainLines[i].split(" ");
+
+            for (int j = 0; j < curLine.length; j++) {
+                styledLyrics[i].add(new StyledWord(curLine[j], new ArrayList<>()));
+            }
+        }
+
+        // Loop through the lines in the rhyme collection
+        for (int i = 0; i < rhymeCollection.lines.size(); i++) {
+            ArrayList<Rhyme> curLineRhymes = rhymeCollection.collection[i];
+
+            // Loop through rhymes in each line
+            for (int j = 0; j < curLineRhymes.size(); j++) {
+                Rhyme rhyme = curLineRhymes.get(j);
+
+                // Get index of word "A" in pair
+                int wordAIndex = wordIndex(rhymeCollection.lines.get(i), rhyme.aStart.syllable);
+
+                // Apply highlight styling
+                StyledWord wordA = styledLyrics[i].get(wordAIndex);
+                if (wordA.getStyle().isEmpty()) {
+                    wordA.style.add("highlight");
+                }
+
+                // Check if rhyme occurs on the same line
+                if (rhyme.aStart.sameLine(rhyme.bStart)) {
+                    int wordBIndex = wordIndex(rhymeCollection.lines.get(i), rhyme.bStart.syllable);
+                    StyledWord wordB = styledLyrics[i].get(wordBIndex);
+                    if (wordB.getStyle().isEmpty()) {
+                        wordB.style.add("highlight");
+                    }
+                } else {
+                    // Handle rhymes across different lines
+                    int wordBIndex = wordIndex(rhymeCollection.lines.get(i + 1), rhyme.bStart.syllable);
+                    StyledWord wordB = styledLyrics[i + 1].get(wordBIndex);
+                    if (wordB.getStyle().isEmpty()) {
+                        wordB.style.add("highlight");
+                    }
+                }
+            }
+        }
+
+        RhymeData monosyllableRhymeData = new RhymeData(styledLyrics);
+        return ApiResponse.success(monosyllableRhymeData);
+
         /**
          * Returning mock data for now
          */
-        ArrayList<String> exampleStyleArray = new ArrayList<>();
-        exampleStyleArray.add("highlight");
-        StyledWord exampleStyledWord = new StyledWord("word", exampleStyleArray);
-
-        ArrayList<StyledWord> styledWords = new ArrayList<>();
-        styledWords.add(exampleStyledWord);
-        styledWords.add(exampleStyledWord);
-
-        ArrayList<StyledWord>[] exampleLyrics = new ArrayList[1];
-        exampleLyrics[0] = styledWords;
-
-        RhymeData placeholderRhymeData = new RhymeData(exampleLyrics);
-        return ApiResponse.success(placeholderRhymeData);
+//        ArrayList<String> exampleStyleArray = new ArrayList<>();
+//        exampleStyleArray.add("highlight");
+//        StyledWord exampleStyledWord = new StyledWord("word", exampleStyleArray);
+//
+//        ArrayList<StyledWord> styledWords = new ArrayList<>();
+//        styledWords.add(exampleStyledWord);
+//        styledWords.add(exampleStyledWord);
+//
+//        ArrayList<StyledWord>[] exampleLyrics = new ArrayList[1];
+//        exampleLyrics[0] = styledWords;
+//
+//        RhymeData placeholderRhymeData = new RhymeData(exampleLyrics);
+//        return ApiResponse.success(placeholderRhymeData);
     }
 
     @Operation(
@@ -202,7 +254,7 @@ public class Controller {
 
         // Initialize data structure to send as a response
         // Nested arrays represent lines in the lyrics
-        // Objects within nested arrays are StyledWord Records
+        // Objects within nested arrays are StyledWord objects
         ArrayList<StyledWord>[] styledLyrics;
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
