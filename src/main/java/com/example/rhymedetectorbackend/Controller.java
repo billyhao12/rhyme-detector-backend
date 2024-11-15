@@ -129,23 +129,6 @@ public class Controller {
 
         RhymeData monosyllableRhymeData = new RhymeData(styledLyrics);
         return ApiResponse.success(monosyllableRhymeData);
-
-        /**
-         * Returning mock data for now
-         */
-//        ArrayList<String> exampleStyleArray = new ArrayList<>();
-//        exampleStyleArray.add("highlight");
-//        StyledWord exampleStyledWord = new StyledWord("word", exampleStyleArray);
-//
-//        ArrayList<StyledWord> styledWords = new ArrayList<>();
-//        styledWords.add(exampleStyledWord);
-//        styledWords.add(exampleStyledWord);
-//
-//        ArrayList<StyledWord>[] exampleLyrics = new ArrayList[1];
-//        exampleLyrics[0] = styledWords;
-//
-//        RhymeData placeholderRhymeData = new RhymeData(exampleLyrics);
-//        return ApiResponse.success(placeholderRhymeData);
     }
 
     @Operation(
