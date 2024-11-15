@@ -57,6 +57,16 @@ public class Syllable {
         return true;
     }
 
+   public boolean perfectlyRhymesWith(Syllable other) {
+       if (!this.vowel.equals(other.vowel)) return false;
+       if (this.endC.size() != other.endC.size()) return false;
+       for (int i = 0; i < this.endC.size(); i++) {
+           if (!this.endC.get(i).equals(other.endC.get(i))) return false;
+       }
+
+       return true;
+   }
+
     public int getStress() {
         return stress;
     }

@@ -34,6 +34,10 @@ public class RhymeCollection {
         }
     }
 
+    /**
+     * Cleans up detected rhymes by removing contained rhymes
+     * and concatenating adjacent/overlapping rhymes
+     */
     public void consolidate() {
         for (int i=0; i<collection.length; i++) {
             ArrayList<Rhyme> cur = collection[i];

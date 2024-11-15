@@ -22,12 +22,49 @@ public class Detector {
     private int size2;
     private int curLineNum;
 
+    public Detector() {}
+
     public Detector(Scoring sc) {
         scor = sc;
     }
 
-    public RhymeCollection getRhymes(ArrayList<PLine> pls) {
+    public RhymeCollection getMonosyllableRhymes(ArrayList<PLine> pLines) {
+       RhymeCollection rhymeCollection = new RhymeCollection(pLines);
+
+      // Detect rhymes between pairs of lines
+
+      // Loop through pLines
+      for (int currentPLineIndex = 0; currentPLineIndex < pLines.size(); currentPLineIndex++) {
+          ArrayList<Syllable> lastLineSyllables;
+
+          if (currentPLineIndex > 0) {
+              lastLineSyllables = pLines.get(currentPLineIndex - 1).getSyllables(false);
+          } else {
+              lastLineSyllables = new ArrayList<Syllable>();
+          }
+
+          ArrayList<Syllable> curLineSyllables = pLines.get(currentPLineIndex).getSyllables(false);
+
+          if (lastLineSyllables.isEmpty()) continue;
+
+          // Find rhymes by comparing syllables between lines
+          for (int lastLineSyllableIndex = 0; lastLineSyllableIndex < lastLineSyllables.size(); lastLineSyllableIndex++) {
+              for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
+                  if (lastLineSyllables.get(lastLineSyllableIndex).perfectlyRhymesWith(curLineSyllables.get(curLineSyllableIndex))) {
+                     Rhyme rhyme = new Rhyme(currentPLineIndex - 1, lastLineSyllableIndex, currentPLineIndex, curLineSyllableIndex);
+                     rhymeCollection.addRhyme(rhyme);
+                  }
+              }
+          }
+      }
+
+      return rhymeCollection;
+    }
+
+    public RhymeCollection getMultisyllableRhymes(ArrayList<PLine> pls) {
         RhymeCollection rc = new RhymeCollection(pls);
+
+        // Loops through pLines
         for (int i=0; i<pls.size(); i++) {
             ArrayList<Syllable> lastLine;
             if (i>0) {
@@ -43,6 +80,7 @@ public class Detector {
             mono = new boolean[size1+size2];
             anchor = new boolean[size1+size2];
 
+            // For loops with "j" loop through pWords
             for (int j=0; j<size1; j++) {
                 Syllable sylJ = lastLine.get(j);
                 if (sylJ.getStress()>0) { // || j==size1-1) {

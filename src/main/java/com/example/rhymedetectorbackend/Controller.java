@@ -52,6 +52,85 @@ public class Controller {
         return ret;
     }
 
+    @PostMapping("/rhymes/monosyllable")
+    public ApiResponse<RhymeData> highlightMonosyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
+        Detector detector = new Detector();
+        Transcriptor transcriptor = new Transcriptor();
+
+        if (lyrics.getLyrics() == null || lyrics.getLyrics().isEmpty()) {
+            Lyrics errorResponse = new Lyrics("No lyrics to highlight");
+            throw new BadLyricsException(errorResponse);
+        }
+
+        String[] plainLines = lyrics.getLyrics().split("\n");
+
+        ArrayList<PLine> inLines = new ArrayList<PLine>();
+        for (int i = 0; i < plainLines.length; i++) {
+            // inLines contain phonemes for each line
+            inLines.add(transcriptor.transcribe(plainLines[i]));
+        }
+        RhymeCollection rhymeCollection = detector.getMonosyllableRhymes(inLines);
+        rhymeCollection.lines = inLines;
+
+        // I've never encountered a situation where this is true
+        if (inLines.isEmpty()) {
+            Lyrics errorResponse = new Lyrics("No lines in input text");
+            throw new BadLyricsException(errorResponse);
+        }
+
+        // Initialize data structure to send as a response
+        // Nested arrays represent lines in the lyrics
+        // Objects within nested arrays are StyledWord objects
+        ArrayList<StyledWord>[] styledLyrics;
+        styledLyrics = new ArrayList[plainLines.length];
+        for (int i = 0; i < styledLyrics.length; i++) {
+            styledLyrics[i] = new ArrayList<>();
+            String[] curLine = plainLines[i].split(" ");
+
+            for (int j = 0; j < curLine.length; j++) {
+                styledLyrics[i].add(new StyledWord(curLine[j], new ArrayList<>()));
+            }
+        }
+
+        // Loop through the lines in the rhyme collection
+        for (int i = 0; i < rhymeCollection.lines.size(); i++) {
+            ArrayList<Rhyme> curLineRhymes = rhymeCollection.collection[i];
+
+            // Loop through rhymes in each line
+            for (int j = 0; j < curLineRhymes.size(); j++) {
+                Rhyme rhyme = curLineRhymes.get(j);
+
+                // Get index of word "A" in pair
+                int wordAIndex = wordIndex(rhymeCollection.lines.get(i), rhyme.aStart.syllable);
+
+                // Apply highlight styling
+                StyledWord wordA = styledLyrics[i].get(wordAIndex);
+                if (wordA.getStyle().isEmpty()) {
+                    wordA.style.add("highlight");
+                }
+
+                // Check if rhyme occurs on the same line
+                if (rhyme.aStart.sameLine(rhyme.bStart)) {
+                    int wordBIndex = wordIndex(rhymeCollection.lines.get(i), rhyme.bStart.syllable);
+                    StyledWord wordB = styledLyrics[i].get(wordBIndex);
+                    if (wordB.getStyle().isEmpty()) {
+                        wordB.style.add("highlight");
+                    }
+                } else {
+                    // Handle rhymes across different lines
+                    int wordBIndex = wordIndex(rhymeCollection.lines.get(i + 1), rhyme.bStart.syllable);
+                    StyledWord wordB = styledLyrics[i + 1].get(wordBIndex);
+                    if (wordB.getStyle().isEmpty()) {
+                        wordB.style.add("highlight");
+                    }
+                }
+            }
+        }
+
+        RhymeData monosyllableRhymeData = new RhymeData(styledLyrics);
+        return ApiResponse.success(monosyllableRhymeData);
+    }
+
     @Operation(
             description = "Highlights multisyllable rhymes",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -128,7 +207,7 @@ public class Controller {
             )
     })
     @PostMapping("/rhymes/multisyllable")
-    public ApiResponse<MultisyllableRhymeData> highlightMultisyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
+    public ApiResponse<RhymeData> highlightMultisyllableRhymes(@RequestBody Lyrics lyrics) throws Exception {
         String STATS_FILE = "iterationStatsUF.txt";
         Stats st = new Stats(STATS_FILE);
         Scoring sc = new Scoring(st, Stats.SPLIT);
@@ -144,9 +223,10 @@ public class Controller {
 
         ArrayList<PLine> inLines = new ArrayList<PLine>();
         for (int i = 0; i < plainLines.length; i++) {
+            // inLines contain phonemes for each line
             inLines.add(tr.transcribe(plainLines[i]));
         }
-        RhymeCollection rc = det.getRhymes(inLines);
+        RhymeCollection rc = det.getMultisyllableRhymes(inLines);
         rc.lines = inLines;
 
         // I've never encountered a situation where this is true
@@ -157,7 +237,7 @@ public class Controller {
 
         // Initialize data structure to send as a response
         // Nested arrays represent lines in the lyrics
-        // Objects within nested arrays are StyledWord Records
+        // Objects within nested arrays are StyledWord objects
         ArrayList<StyledWord>[] styledLyrics;
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
@@ -213,7 +293,7 @@ public class Controller {
             }
         }
 
-        MultisyllableRhymeData multisyllableRhymeData = new MultisyllableRhymeData(styledLyrics);
+        RhymeData multisyllableRhymeData = new RhymeData(styledLyrics);
         return ApiResponse.success(multisyllableRhymeData);
     }
 }

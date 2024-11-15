@@ -34,6 +34,12 @@ public class PLine extends ArrayList<PWord> {
         return ret;
     }
 
+    /**
+     * Gets the syllables of a PLine
+     *
+     * @param flatten
+     * @return ArrayList of Syllable
+     */
     public ArrayList<Syllable> getSyllables(boolean flatten) {
         ArrayList<Syllable> ret = new ArrayList<Syllable>();
         for (int i=0; i<this.size(); i++) {
