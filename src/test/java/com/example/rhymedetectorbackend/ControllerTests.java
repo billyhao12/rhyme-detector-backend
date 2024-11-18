@@ -65,4 +65,38 @@ public class ControllerTests {
         // Assert that the responses are equal
         assertThat(actualResponse).isEqualTo(expectedResponse);
     }
+
+    @Test
+    void shouldHighlightMonosyllableRhymes() throws Exception {
+        Lyrics lyrics = new Lyrics("His palms are sweaty, knees weak, arms are heavy\nThere's vomit on his sweater already, mom's spaghetti");
+
+        String mockJsonResponse = "{\"status\":\"success\",\"data\":{\"lyrics\":[[{\"word\":\"His\",\"style\":[\"highlight\"]},{\"word\":\"palms\",\"style\":[\"highlight\"]},{\"word\":\"are\",\"style\":[]},{\"word\":\"sweaty,\",\"style\":[\"highlight\"]},{\"word\":\"knees\",\"style\":[]},{\"word\":\"weak,\",\"style\":[]},{\"word\":\"arms\",\"style\":[]},{\"word\":\"are\",\"style\":[]},{\"word\":\"heavy\",\"style\":[\"highlight\"]}],[{\"word\":\"There's\",\"style\":[]},{\"word\":\"vomit\",\"style\":[]},{\"word\":\"on\",\"style\":[]},{\"word\":\"his\",\"style\":[\"highlight\"]},{\"word\":\"sweater\",\"style\":[\"highlight\"]},{\"word\":\"already,\",\"style\":[\"highlight\"]},{\"word\":\"mom's\",\"style\":[\"highlight\"]},{\"word\":\"spaghetti\",\"style\":[\"highlight\"]}]]}}}";
+
+        // Convert mock JSON response to a Map
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> expectedResponse = objectMapper.readValue(mockJsonResponse, Map.class);
+
+        // Perform POST request and get the response
+        Map<String, Object> actualResponse = restTemplate.postForObject("http://localhost:" + port + "/rhymes/monosyllable", lyrics, Map.class);
+
+        // Assert that the responses are equal
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    void monosyllableEndpointShouldFailWhenPassedEmptyString() throws Exception {
+        Lyrics lyrics = new Lyrics("");
+
+        String mockJsonResponse = "{\"status\": \"fail\",\"data\": {\"lyrics\": \"No lyrics to highlight\"}}";
+
+        // Convert mock JSON response to a Map
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> expectedResponse = objectMapper.readValue(mockJsonResponse, Map.class);
+
+        // Perform POST request and get the response
+        Map<String, Object> actualResponse = restTemplate.postForObject("http://localhost:" + port + "/rhymes/monosyllable", lyrics, Map.class);
+
+        // Assert that the responses are equal
+        assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
 }
