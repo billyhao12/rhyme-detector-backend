@@ -160,7 +160,7 @@ public class Controller {
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
             styledLyrics[i] = new ArrayList<>();
-            String[] curLine = plainLines[i].split(" ");
+            String[] curLine = plainLines[i].split("[\\s-]+");
 
             for (int j = 0; j < curLine.length; j++) {
                 styledLyrics[i].add(new StyledWord(curLine[j], new ArrayList<>()));
@@ -317,7 +317,7 @@ public class Controller {
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
             styledLyrics[i] = new ArrayList<>();
-            String[] curLine = plainLines[i].split(" ");
+            String[] curLine = plainLines[i].split("[\\s-]+");
 
             for (int j = 0; j < curLine.length; j++) {
                 styledLyrics[i].add(new StyledWord(curLine[j], new ArrayList<>()));
