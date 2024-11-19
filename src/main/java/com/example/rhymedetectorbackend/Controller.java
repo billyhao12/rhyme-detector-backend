@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@CrossOrigin(origins = { "http://localhost:3000", "https://rhyme-detector.vercel.app" })
+@CrossOrigin(origins = { "http://localhost:3000",
+        "https://rhyme-detector-git-dev-billyhao12s-projects.vercel.app",
+        "https://rhyme-detector.vercel.app" })
 @RestController
 public class Controller {
 
@@ -160,7 +162,7 @@ public class Controller {
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
             styledLyrics[i] = new ArrayList<>();
-            String[] curLine = plainLines[i].split(" ");
+            String[] curLine = plainLines[i].split("[\\s-]+"); // split by space and dash
 
             for (int j = 0; j < curLine.length; j++) {
                 styledLyrics[i].add(new StyledWord(curLine[j], new ArrayList<>()));
@@ -317,7 +319,7 @@ public class Controller {
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
             styledLyrics[i] = new ArrayList<>();
-            String[] curLine = plainLines[i].split(" ");
+            String[] curLine = plainLines[i].split("[\\s-]+"); // split by space and dash
 
             for (int j = 0; j < curLine.length; j++) {
                 styledLyrics[i].add(new StyledWord(curLine[j], new ArrayList<>()));
