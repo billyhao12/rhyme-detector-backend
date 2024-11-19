@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@CrossOrigin(origins = { "http://localhost:3000", "https://rhyme-detector.vercel.app" })
+@CrossOrigin(origins = { "http://localhost:3000",
+        "https://rhyme-detector-git-dev-billyhao12s-projects.vercel.app",
+        "https://rhyme-detector.vercel.app" })
 @RestController
 public class Controller {
 
