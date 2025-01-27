@@ -156,8 +156,8 @@ public class Controller {
         }
 
         // Initialize data structure to send as a response
-        // Nested arrays represent lines in the lyrics
-        // Objects within nested arrays are StyledWord objects
+        // Arrays within the outer array represent lines in the lyrics
+        // Objects within the inner arrays are StyledWord objects
         ArrayList<StyledWord>[] styledLyrics;
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
@@ -313,8 +313,8 @@ public class Controller {
         }
 
         // Initialize data structure to send as a response
-        // Nested arrays represent lines in the lyrics
-        // Objects within nested arrays are StyledWord objects
+        // Arrays within the outer array represent lines in the lyrics
+        // Objects within the inner arrays are StyledWord objects
         ArrayList<StyledWord>[] styledLyrics;
         styledLyrics = new ArrayList[plainLines.length];
         for (int i = 0; i < styledLyrics.length; i++) {
