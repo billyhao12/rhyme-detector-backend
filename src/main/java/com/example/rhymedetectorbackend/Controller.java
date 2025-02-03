@@ -328,7 +328,7 @@ public class Controller {
 
         // Define styles used to highlight rhymes
         int styleMod = 0;
-        String[] styles = { "bold", "italic", "red", "underline", "strikethrough" };
+        String[] styles = { "bold", "italic", "red", "underline", "highlight" };
 
         // Loop through the lines in the rhyme collection
         for (int i = 0; i < rc.lines.size(); i++) {
