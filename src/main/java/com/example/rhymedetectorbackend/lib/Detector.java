@@ -47,7 +47,17 @@ public class Detector {
 
           if (lastLineSyllables.isEmpty()) continue;
 
-          // Find rhymes by comparing syllables between lines
+         // Find rhymes within a line
+         for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
+             for (int curLineSyllableIndex2 = curLineSyllableIndex + 1; curLineSyllableIndex2 < curLineSyllables.size(); curLineSyllableIndex2++) {
+                 if (curLineSyllables.get(curLineSyllableIndex).perfectlyRhymesWith(curLineSyllables.get(curLineSyllableIndex2))) {
+                     Rhyme rhyme = new Rhyme(currentPLineIndex, curLineSyllableIndex, currentPLineIndex, curLineSyllableIndex2);
+                     rhymeCollection.addRhyme(rhyme);
+                 }
+             }
+         }
+
+          // Find rhymes between lines
           for (int lastLineSyllableIndex = 0; lastLineSyllableIndex < lastLineSyllables.size(); lastLineSyllableIndex++) {
               for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
                   if (lastLineSyllables.get(lastLineSyllableIndex).perfectlyRhymesWith(curLineSyllables.get(curLineSyllableIndex))) {
