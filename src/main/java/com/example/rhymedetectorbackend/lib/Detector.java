@@ -1,6 +1,8 @@
 package com.example.rhymedetectorbackend.lib;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 // Class for detecting rhymes given a Scoring class
 // main function takes an ArrayList<PLine> and returns a RhymeCollection
@@ -28,10 +30,22 @@ public class Detector {
         scor = sc;
     }
 
+    // Uses caching to avoid redundant rhyme checks in the getMonosyllableRhymes method
+    private boolean cachedPerfectRhymeCheck(Syllable s1, Syllable s2, Map<String, Boolean> rhymeCache) {
+        String key = s1.toString() + "|" + s2.toString(); // Unique key for the cache
+        if (rhymeCache.containsKey(key)) {
+            return rhymeCache.get(key);
+        }
+        boolean result = s1.perfectlyRhymesWith(s2);
+        rhymeCache.put(key, result);
+        return result;
+    }
+
     public RhymeCollection getMonosyllableRhymes(ArrayList<PLine> pLines) {
        RhymeCollection rhymeCollection = new RhymeCollection(pLines);
+       Map<String, Boolean> rhymeCache = new HashMap<>();
 
-      // Detect rhymes between pairs of lines
+      // Detect rhymes within a line and between pairs of lines
 
       // Loop through pLines
       for (int currentPLineIndex = 0; currentPLineIndex < pLines.size(); currentPLineIndex++) {
@@ -50,7 +64,7 @@ public class Detector {
          // Find rhymes within a line
          for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
              for (int curLineSyllableIndex2 = curLineSyllableIndex + 1; curLineSyllableIndex2 < curLineSyllables.size(); curLineSyllableIndex2++) {
-                 if (curLineSyllables.get(curLineSyllableIndex).perfectlyRhymesWith(curLineSyllables.get(curLineSyllableIndex2))) {
+                 if (cachedPerfectRhymeCheck(curLineSyllables.get(curLineSyllableIndex), curLineSyllables.get(curLineSyllableIndex2), rhymeCache)) {
                      Rhyme rhyme = new Rhyme(currentPLineIndex, curLineSyllableIndex, currentPLineIndex, curLineSyllableIndex2);
                      rhymeCollection.addRhyme(rhyme);
                  }
@@ -60,7 +74,7 @@ public class Detector {
           // Find rhymes between lines
           for (int lastLineSyllableIndex = 0; lastLineSyllableIndex < lastLineSyllables.size(); lastLineSyllableIndex++) {
               for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
-                  if (lastLineSyllables.get(lastLineSyllableIndex).perfectlyRhymesWith(curLineSyllables.get(curLineSyllableIndex))) {
+                  if (cachedPerfectRhymeCheck(lastLineSyllables.get(lastLineSyllableIndex), curLineSyllables.get(curLineSyllableIndex), rhymeCache)) {
                      Rhyme rhyme = new Rhyme(currentPLineIndex - 1, lastLineSyllableIndex, currentPLineIndex, curLineSyllableIndex);
                      rhymeCollection.addRhyme(rhyme);
                   }
