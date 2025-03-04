@@ -68,9 +68,9 @@ public class ControllerTests {
 
     @Test
     void shouldHighlightMonosyllableRhymes() throws Exception {
-        Lyrics lyrics = new Lyrics("His palms are sweaty, knees weak, arms are heavy\nThere's vomit on his sweater already, mom's spaghetti");
+        Lyrics lyrics = new Lyrics("A child is born with no state of mind\nBlind to the ways of mankind");
 
-        String mockJsonResponse = "{\"status\":\"success\",\"data\":{\"lyrics\":[[{\"word\":\"His\",\"style\":[\"highlight\"]},{\"word\":\"palms\",\"style\":[\"highlight\"]},{\"word\":\"are\",\"style\":[]},{\"word\":\"sweaty,\",\"style\":[\"highlight\"]},{\"word\":\"knees\",\"style\":[]},{\"word\":\"weak,\",\"style\":[]},{\"word\":\"arms\",\"style\":[]},{\"word\":\"are\",\"style\":[]},{\"word\":\"heavy\",\"style\":[\"highlight\"]}],[{\"word\":\"There's\",\"style\":[]},{\"word\":\"vomit\",\"style\":[]},{\"word\":\"on\",\"style\":[]},{\"word\":\"his\",\"style\":[\"highlight\"]},{\"word\":\"sweater\",\"style\":[\"highlight\"]},{\"word\":\"already,\",\"style\":[\"highlight\"]},{\"word\":\"mom's\",\"style\":[\"highlight\"]},{\"word\":\"spaghetti\",\"style\":[\"highlight\"]}]]}}}";
+        String mockJsonResponse = "{\"status\":\"success\",\"data\":{\"lyrics\":[[{\"word\":\"A\",\"style\":[\"highlight\"]},{\"word\":\"child\",\"style\":[]},{\"word\":\"is\",\"style\":[]},{\"word\":\"born\",\"style\":[]},{\"word\":\"with\",\"style\":[]},{\"word\":\"no\",\"style\":[]},{\"word\":\"state\",\"style\":[]},{\"word\":\"of\",\"style\":[\"highlight\"]},{\"word\":\"mind\",\"style\":[\"highlight\"]}],[{\"word\":\"Blind\",\"style\":[\"highlight\"]},{\"word\":\"to\",\"style\":[]},{\"word\":\"the\",\"style\":[\"highlight\"]},{\"word\":\"ways\",\"style\":[]},{\"word\":\"of\",\"style\":[\"highlight\"]},{\"word\":\"mankind\",\"style\":[\"highlight\"]}]]}}";
 
         // Convert mock JSON response to a Map
         ObjectMapper objectMapper = new ObjectMapper();
