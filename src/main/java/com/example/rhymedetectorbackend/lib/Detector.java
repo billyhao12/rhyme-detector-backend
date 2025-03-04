@@ -30,59 +30,54 @@ public class Detector {
         scor = sc;
     }
 
-    // Uses caching to avoid redundant rhyme checks in the getMonosyllableRhymes method
-    private boolean cachedPerfectRhymeCheck(Syllable s1, Syllable s2, Map<String, Boolean> rhymeCache) {
-        String key = s1.toString() + "|" + s2.toString(); // Unique key for the cache
-        if (rhymeCache.containsKey(key)) {
-            return rhymeCache.get(key);
-        }
-        boolean result = s1.perfectlyRhymesWith(s2);
-        rhymeCache.put(key, result);
-        return result;
-    }
-
     public RhymeCollection getMonosyllableRhymes(ArrayList<PLine> pLines) {
-       RhymeCollection rhymeCollection = new RhymeCollection(pLines);
-       Map<String, Boolean> rhymeCache = new HashMap<>();
+        RhymeCollection rhymeCollection = new RhymeCollection(pLines);
 
-      // Detect rhymes within a line and between pairs of lines
+        for (int currentPLineIndex = 0; currentPLineIndex < pLines.size(); currentPLineIndex++) {
+            ArrayList<Syllable> lastLineSyllables = (currentPLineIndex > 0)
+                    ? pLines.get(currentPLineIndex - 1).getSyllables(false)
+                    : new ArrayList<>();
 
-      // Loop through pLines
-      for (int currentPLineIndex = 0; currentPLineIndex < pLines.size(); currentPLineIndex++) {
-          ArrayList<Syllable> lastLineSyllables;
+            ArrayList<Syllable> curLineSyllables = pLines.get(currentPLineIndex).getSyllables(false);
 
-          if (currentPLineIndex > 0) {
-              lastLineSyllables = pLines.get(currentPLineIndex - 1).getSyllables(false);
-          } else {
-              lastLineSyllables = new ArrayList<Syllable>();
-          }
+            if (curLineSyllables.isEmpty()) continue;
 
-          ArrayList<Syllable> curLineSyllables = pLines.get(currentPLineIndex).getSyllables(false);
+            // Create a score matrix to store rhyme relationships
+            int size1 = lastLineSyllables.size();
+            int size2 = curLineSyllables.size();
+            double[][] raw = new double[size1 + size2][size1 + size2];
 
-          if (lastLineSyllables.isEmpty()) continue;
+            // Precompute rhyme scores within the current line
+            for (int j = 0; j < size2; j++) {
+                for (int k = j + 1; k < size2; k++) { // Check all syllables within the same line
+                    raw[size1 + j][size1 + k] = curLineSyllables.get(j).perfectlyRhymesWith(curLineSyllables.get(k)) ? 1.0 : 0.0;
+                }
+            }
 
-         // Find rhymes within a line
-         for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
-             for (int curLineSyllableIndex2 = curLineSyllableIndex + 1; curLineSyllableIndex2 < curLineSyllables.size(); curLineSyllableIndex2++) {
-                 if (cachedPerfectRhymeCheck(curLineSyllables.get(curLineSyllableIndex), curLineSyllables.get(curLineSyllableIndex2), rhymeCache)) {
-                     Rhyme rhyme = new Rhyme(currentPLineIndex, curLineSyllableIndex, currentPLineIndex, curLineSyllableIndex2);
-                     rhymeCollection.addRhyme(rhyme);
-                 }
-             }
-         }
+            // Precompute rhyme scores between last & current line
+            for (int j = 0; j < size1; j++) {
+                for (int k = 0; k < size2; k++) { // Compare last line with current line
+                    raw[j][size1 + k] = lastLineSyllables.get(j).perfectlyRhymesWith(curLineSyllables.get(k)) ? 1.0 : 0.0;
+                }
+            }
 
-          // Find rhymes between lines
-          for (int lastLineSyllableIndex = 0; lastLineSyllableIndex < lastLineSyllables.size(); lastLineSyllableIndex++) {
-              for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
-                  if (cachedPerfectRhymeCheck(lastLineSyllables.get(lastLineSyllableIndex), curLineSyllables.get(curLineSyllableIndex), rhymeCache)) {
-                     Rhyme rhyme = new Rhyme(currentPLineIndex - 1, lastLineSyllableIndex, currentPLineIndex, curLineSyllableIndex);
-                     rhymeCollection.addRhyme(rhyme);
-                  }
-              }
-          }
-      }
+            // Detect rhymes (Within a line & Between lines)
+            for (int j = 0; j < size1 + size2; j++) {
+                for (int k = j + 1; k < size1 + size2; k++) {
+                    if (raw[j][k] > 0) { // If syllables rhyme
+                        int line1 = (j < size1) ? currentPLineIndex - 1 : currentPLineIndex;
+                        int syll1Index = (j < size1) ? j : j - size1;
+                        int line2 = (k < size1) ? currentPLineIndex - 1 : currentPLineIndex;
+                        int syll2Index = (k < size1) ? k : k - size1;
 
-      return rhymeCollection;
+                        Rhyme rhyme = new Rhyme(line1, syll1Index, line2, syll2Index);
+                        rhymeCollection.addRhyme(rhyme);
+                    }
+                }
+            }
+        }
+
+        return rhymeCollection;
     }
 
     public RhymeCollection getMultisyllableRhymes(ArrayList<PLine> pls) {
