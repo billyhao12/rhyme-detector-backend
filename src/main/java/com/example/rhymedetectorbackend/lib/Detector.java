@@ -24,6 +24,8 @@ public class Detector {
     private int size2;
     private int curLineNum;
 
+    private int timesAddRhymeIsCalled = 0;
+
     public Detector() {}
 
     public Detector(Scoring sc) {
@@ -72,11 +74,13 @@ public class Detector {
 
                         Rhyme rhyme = new Rhyme(line1, syll1Index, line2, syll2Index);
                         rhymeCollection.addRhyme(rhyme);
+                        timesAddRhymeIsCalled += 1;
                     }
                 }
             }
         }
 
+        System.out.println("times add rhyme is called: " + timesAddRhymeIsCalled);
         return rhymeCollection;
     }
 
@@ -144,6 +148,7 @@ public class Detector {
                                 }
                                 if (rc.missedSyls(r)>0) {
                                     rc.addRhyme(r);
+                                    timesAddRhymeIsCalled += 1;
                                 }
                             }
                         }
@@ -152,6 +157,8 @@ public class Detector {
             }
         }
         rc.consolidate();
+
+        System.out.println("times add rhyme is called: " + timesAddRhymeIsCalled);
         return rc;
     }
 
