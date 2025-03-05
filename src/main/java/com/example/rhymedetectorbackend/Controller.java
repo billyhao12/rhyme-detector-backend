@@ -312,7 +312,7 @@ public class Controller {
             throw new BadLyricsException(errorResponse);
         }
 
-        // Initialize data structure to send as a response
+        // Initialize data structure for lyrics with style info
         // Arrays within the outer array represent lines in the lyrics
         // Objects within the inner arrays are StyledWord objects
         ArrayList<StyledWord>[] styledLyrics;
@@ -326,6 +326,9 @@ public class Controller {
             }
         }
 
+        // Initialize data structure for rhyme pairs
+        ArrayList<RhymePair> rhymePairs = new ArrayList<>();
+
         // Define styles used to highlight rhymes
         int styleMod = 0;
         String[] styles = { "bold", "italic", "red", "underline", "highlight" };
@@ -336,41 +339,52 @@ public class Controller {
 
             // Loop through rhyme phrase pairs
             for (int j = 0; j < curLineRhymes.size(); j++) {
-                Rhyme r = curLineRhymes.get(j);
+                Rhyme rhyme = curLineRhymes.get(j);
 
                 // First and last word of rhyme phrase A
-                int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
-                int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
+                int firstWord = wordIndex(rc.lines.get(i), rhyme.aStart.syllable);
+                int lastWord = wordIndex(rc.lines.get(i), rhyme.aEnd().syllable);
 
                 // Update the styling of each word contained in the rhyme phrase
                 for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                     styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
                 }
 
+                RhymePair rhymePair = new RhymePair(rhyme.elementAToString(), styles[styleMod]);
+                rhymePair.addALine(i + 1);
+
                 // Check if rhyme occurs on the same line
-                if (r.aStart.sameLine(r.bStart)) {
-                    firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
-                    lastWord = wordIndex(rc.lines.get(i), r.bEnd().syllable);
+                if (rhyme.aStart.sameLine(rhyme.bStart)) {
+                    firstWord = wordIndex(rc.lines.get(i), rhyme.bStart.syllable);
+                    lastWord = wordIndex(rc.lines.get(i), rhyme.bEnd().syllable);
 
                     for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                         styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
                     }
+
+                    rhymePair.setElementB(rhyme.elementBToString());
                 } else {
                     // Handle rhymes across different lines
-                    firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
-                    lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
+                    firstWord = wordIndex(rc.lines.get(i + 1), rhyme.bStart.syllable);
+                    lastWord = wordIndex(rc.lines.get(i + 1), rhyme.bEnd().syllable);
 
                     for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                         styledLyrics[i + 1].get(wordIndex).style.add(styles[styleMod]);
                     }
+
+                    rhymePair.setElementB(rhyme.elementBToString());
+                    rhymePair.addALine(i + 2);
                 }
+
+                // Add to list of rhyme pairs
+                rhymePairs.add(rhymePair);
 
                 // Rotate through the styles
                 styleMod = (styleMod + 1) % styles.length;
             }
         }
 
-        RhymeData multisyllableRhymeData = new RhymeData(styledLyrics);
+        RhymeData multisyllableRhymeData = new RhymeData(styledLyrics, rhymePairs);
         return ApiResponse.success(multisyllableRhymeData);
     }
 }
