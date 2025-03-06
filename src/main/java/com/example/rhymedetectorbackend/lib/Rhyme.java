@@ -234,10 +234,9 @@ public class Rhyme {
         return ret;
     }
 
-    public String elementAToString(ArrayList<PLine> source) {
+    public String elementAToString(PLine aLine) {
         String ret = "";
-        if (source!=null) {
-            PLine aLine = source.get(aStart.line);
+        if (aLine != null) {
             int wordSpot = -1;
             int sum = 0;
             while (sum < aStart.syllable + 1) {
@@ -255,12 +254,11 @@ public class Rhyme {
         return ret;
     }
 
-    public String elementBToString(ArrayList<PLine> source) {
+    public String elementBToString(PLine bLine) {
         String ret = "";
-        if (source!=null) {
+        if (bLine != null) {
             int wordSpot = -1;
             int sum = 0;
-            PLine bLine = source.get(bStart.line);
             while (sum<bStart.syllable+1) {
                 wordSpot++;
                 sum += bLine.get(wordSpot).numSyls();
