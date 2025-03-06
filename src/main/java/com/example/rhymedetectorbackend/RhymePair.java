@@ -12,27 +12,27 @@ public class RhymePair {
     String elementA;
     String elementB;
     String style;
-    ArrayList<Integer> line;
+    ArrayList<Integer> lines;
 
     public RhymePair() {
         this.elementA = "";
         this.elementB = "";
         this.style = "";
-        this.line = new ArrayList<>();
+        this.lines = new ArrayList<>();
     }
 
     public RhymePair(String elementA, String style) {
         this.elementA = elementA;
         this.elementB = "";
         this.style = style;
-        this.line = new ArrayList<>();
+        this.lines = new ArrayList<>();
     }
 
-    public RhymePair(String elementA, String elementB, String style, ArrayList<Integer> line) {
+    public RhymePair(String elementA, String elementB, String style, ArrayList<Integer> lines) {
         this.elementA = elementA;
         this.elementB = elementB;
         this.style = style;
-        this.line = line;
+        this.lines = lines;
     }
 
     public String getElementA() {
@@ -47,8 +47,8 @@ public class RhymePair {
         return style;
     }
 
-    public ArrayList<Integer> getLine() {
-        return line;
+    public ArrayList<Integer> getLines() {
+        return lines;
     }
 
     public void setElementA(String elementA) {
@@ -64,6 +64,6 @@ public class RhymePair {
     }
 
     public void addALine(int lineNumber) {
-        this.line.add(lineNumber);
+        this.lines.add(lineNumber);
     }
 }
