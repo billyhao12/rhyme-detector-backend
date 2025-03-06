@@ -261,6 +261,10 @@ public class Controller {
                                             {"word": "a", "style": []},
                                             {"word": "test", "style": []}
                                         ]
+                                    ],
+                                    "rhymePairs": [
+                                        {"elementA": "Hello", "elementB": "world", "style": ["bold"], "lines": [1]},
+                                        {"elementA": "Hello", "elementB": "test", "style": ["italic"], "lines": [1, 2]}
                                     ]
                                 }
                             }
