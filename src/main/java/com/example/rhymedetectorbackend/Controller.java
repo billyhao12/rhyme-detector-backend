@@ -355,7 +355,7 @@ public class Controller {
                     fullRhymePhraseA.add(styledLyrics[i].get(wordIndex).getWord());
                 }
 
-                RhymePair rhymePair = new RhymePair(fullRhymePhraseA.toString(), styles[styleMod]);
+                RhymePair rhymePair = new RhymePair(fullRhymePhraseA.toString().replaceAll("[\\p{Punct}&&[^']]", ""), styles[styleMod]);
                 rhymePair.addALine(i + 1);
 
                 // Check if rhyme occurs on the same line
@@ -370,7 +370,7 @@ public class Controller {
                         fullRhymePhraseB.add(styledLyrics[i].get(wordIndex).getWord());
                     }
 
-                    rhymePair.setElementB(fullRhymePhraseB.toString());
+                    rhymePair.setElementB(fullRhymePhraseB.toString().replaceAll("[\\p{Punct}&&[^']]", ""));
                 } else {
                     // Handle rhymes across different lines
                     firstWord = wordIndex(rc.lines.get(i + 1), rhyme.bStart.syllable);
@@ -383,7 +383,7 @@ public class Controller {
                         fullRhymePhraseB.add(styledLyrics[i + 1].get(wordIndex).getWord());
                     }
 
-                    rhymePair.setElementB(fullRhymePhraseB.toString());
+                    rhymePair.setElementB(fullRhymePhraseB.toString().replaceAll("[\\p{Punct}&&[^']]", ""));
                     rhymePair.addALine(i + 2);
                 }
 
