@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 @CrossOrigin(origins = { "http://localhost:3000",
         "https://rhyme-detector-git-dev-billyhao12s-projects.vercel.app",
@@ -345,12 +346,16 @@ public class Controller {
                 int firstWord = wordIndex(rc.lines.get(i), rhyme.aStart.syllable);
                 int lastWord = wordIndex(rc.lines.get(i), rhyme.aEnd().syllable);
 
+                StringJoiner fullRhymePhraseA = new StringJoiner(" ");
+
                 // Update the styling of each word contained in the rhyme phrase
+                // Build fullRhymePhraseA
                 for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                     styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
+                    fullRhymePhraseA.add(styledLyrics[i].get(wordIndex).getWord());
                 }
 
-                RhymePair rhymePair = new RhymePair(rhyme.elementAToString(), styles[styleMod]);
+                RhymePair rhymePair = new RhymePair(fullRhymePhraseA.toString(), styles[styleMod]);
                 rhymePair.addALine(i + 1);
 
                 // Check if rhyme occurs on the same line
@@ -358,21 +363,27 @@ public class Controller {
                     firstWord = wordIndex(rc.lines.get(i), rhyme.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i), rhyme.bEnd().syllable);
 
+                    StringJoiner fullRhymePhraseB = new StringJoiner(" ");
+
                     for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                         styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
+                        fullRhymePhraseB.add(styledLyrics[i].get(wordIndex).getWord());
                     }
 
-                    rhymePair.setElementB(rhyme.elementBToString());
+                    rhymePair.setElementB(fullRhymePhraseB.toString());
                 } else {
                     // Handle rhymes across different lines
                     firstWord = wordIndex(rc.lines.get(i + 1), rhyme.bStart.syllable);
                     lastWord = wordIndex(rc.lines.get(i + 1), rhyme.bEnd().syllable);
 
+                    StringJoiner fullRhymePhraseB = new StringJoiner(" ");
+
                     for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                         styledLyrics[i + 1].get(wordIndex).style.add(styles[styleMod]);
+                        fullRhymePhraseB.add(styledLyrics[i + 1].get(wordIndex).getWord());
                     }
 
-                    rhymePair.setElementB(rhyme.elementBToString());
+                    rhymePair.setElementB(fullRhymePhraseB.toString());
                     rhymePair.addALine(i + 2);
                 }
 
