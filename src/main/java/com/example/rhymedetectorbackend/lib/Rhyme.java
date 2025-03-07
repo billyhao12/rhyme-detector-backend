@@ -158,6 +158,48 @@ public class Rhyme {
         return ret;
     }
 
+    public String elementAToString() {
+        String ret = "";
+        if (sourceText!=null) {
+            PLine aLine = sourceText.get(aStart.line);
+            int wordSpot = -1;
+            int sum = 0;
+            while (sum < aStart.syllable + 1) {
+                wordSpot++;
+                sum += aLine.get(wordSpot).numSyls();
+            }
+            ret += aLine.get(wordSpot).getPlainWord() + " ";
+            while (sum < aEnd().syllable + 1) {
+                wordSpot++;
+                sum += aLine.get(wordSpot).numSyls();
+                ret += aLine.get(wordSpot).getPlainWord() + " ";
+            }
+        }
+
+        return ret;
+    }
+
+    public String elementBToString() {
+        String ret = "";
+        if (sourceText!=null) {
+            int wordSpot = -1;
+            int sum = 0;
+            PLine bLine = sourceText.get(bStart.line);
+            while (sum<bStart.syllable+1) {
+                wordSpot++;
+                sum += bLine.get(wordSpot).numSyls();
+            }
+            ret += bLine.get(wordSpot).getPlainWord() + " ";
+            while (sum<bEnd().syllable+1) {
+                wordSpot++;
+                sum += bLine.get(wordSpot).numSyls();
+                ret += bLine.get(wordSpot).getPlainWord() + " ";
+            }
+        }
+
+        return ret;
+    }
+
     public String toString(ArrayList<PLine> source) {
         String ret = "";
         if (source!=null) {
@@ -187,6 +229,46 @@ public class Rhyme {
             if (length>1) ret += " to " + (aStart.syllable+length-1);
             ret += " with Line " + bStart.line + " syllable " + bStart.syllable;
             if (length>1) ret += " to " + (bStart.syllable+length-1);
+        }
+
+        return ret;
+    }
+
+    public String elementAToString(PLine aLine) {
+        String ret = "";
+        if (aLine != null) {
+            int wordSpot = -1;
+            int sum = 0;
+            while (sum < aStart.syllable + 1) {
+                wordSpot++;
+                sum += aLine.get(wordSpot).numSyls();
+            }
+            ret += aLine.get(wordSpot).getPlainWord() + " ";
+            while (sum < aEnd().syllable + 1) {
+                wordSpot++;
+                sum += aLine.get(wordSpot).numSyls();
+                ret += aLine.get(wordSpot).getPlainWord() + " ";
+            }
+        }
+
+        return ret;
+    }
+
+    public String elementBToString(PLine bLine) {
+        String ret = "";
+        if (bLine != null) {
+            int wordSpot = -1;
+            int sum = 0;
+            while (sum<bStart.syllable+1) {
+                wordSpot++;
+                sum += bLine.get(wordSpot).numSyls();
+            }
+            ret += bLine.get(wordSpot).getPlainWord() + " ";
+            while (sum<bEnd().syllable+1) {
+                wordSpot++;
+                sum += bLine.get(wordSpot).numSyls();
+                ret += bLine.get(wordSpot).getPlainWord() + " ";
+            }
         }
 
         return ret;

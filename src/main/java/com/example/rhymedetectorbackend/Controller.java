@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 @CrossOrigin(origins = { "http://localhost:3000",
         "https://rhyme-detector-git-dev-billyhao12s-projects.vercel.app",
@@ -106,6 +107,10 @@ public class Controller {
                                             {"word": "a", "style": []},
                                             {"word": "test", "style": ["highlight"]}
                                         ]
+                                    ],
+                                    "rhymePairs": [
+                                        {"elementA": "Hello", "elementB": "world", "style": ["highlight"], "lines": [1]},
+                                        {"elementA": "Hello", "elementB": "test", "style": ["highlight"], "lines": [1, 2]}
                                     ]
                                 }
                             }
@@ -169,6 +174,9 @@ public class Controller {
             }
         }
 
+       // Initialize data structure for rhyme pairs
+       ArrayList<RhymePair> rhymePairs = new ArrayList<>();
+
         // Loop through the lines in the rhyme collection
         for (int i = 0; i < rhymeCollection.lines.size(); i++) {
             ArrayList<Rhyme> curLineRhymes = rhymeCollection.collection[i];
@@ -186,6 +194,10 @@ public class Controller {
                     wordA.style.add("highlight");
                 }
 
+                // Create a rhyme pair
+                RhymePair rhymePair = new RhymePair(wordA.getWord().replaceAll("[\\p{Punct}&&[^']]", ""), "highlight");
+                rhymePair.addALine(i + 1);
+
                 // Check if rhyme occurs on the same line
                 if (rhyme.aStart.sameLine(rhyme.bStart)) {
                     int wordBIndex = wordIndex(rhymeCollection.lines.get(i), rhyme.bStart.syllable);
@@ -193,6 +205,8 @@ public class Controller {
                     if (wordB.getStyle().isEmpty()) {
                         wordB.style.add("highlight");
                     }
+
+                    rhymePair.setElementB(wordB.getWord().replaceAll("[\\p{Punct}&&[^']]", ""));
                 } else {
                     // Handle rhymes across different lines
                     int wordBIndex = wordIndex(rhymeCollection.lines.get(i + 1), rhyme.bStart.syllable);
@@ -200,11 +214,17 @@ public class Controller {
                     if (wordB.getStyle().isEmpty()) {
                         wordB.style.add("highlight");
                     }
+
+                    rhymePair.setElementB(wordB.getWord().replaceAll("[\\p{Punct}&&[^']]", ""));
+                    rhymePair.addALine(i + 2);
                 }
+
+                // Add to list of rhyme pairs
+                rhymePairs.add(rhymePair);
             }
         }
 
-        RhymeData monosyllableRhymeData = new RhymeData(styledLyrics);
+        RhymeData monosyllableRhymeData = new RhymeData(styledLyrics, rhymePairs);
         return ApiResponse.success(monosyllableRhymeData);
     }
 
@@ -260,6 +280,10 @@ public class Controller {
                                             {"word": "a", "style": []},
                                             {"word": "test", "style": []}
                                         ]
+                                    ],
+                                    "rhymePairs": [
+                                        {"elementA": "Hello", "elementB": "world", "style": ["bold"], "lines": [1]},
+                                        {"elementA": "Hello", "elementB": "test", "style": ["italic"], "lines": [1, 2]}
                                     ]
                                 }
                             }
@@ -312,7 +336,7 @@ public class Controller {
             throw new BadLyricsException(errorResponse);
         }
 
-        // Initialize data structure to send as a response
+        // Initialize data structure for lyrics with style info
         // Arrays within the outer array represent lines in the lyrics
         // Objects within the inner arrays are StyledWord objects
         ArrayList<StyledWord>[] styledLyrics;
@@ -326,6 +350,9 @@ public class Controller {
             }
         }
 
+        // Initialize data structure for rhyme pairs
+        ArrayList<RhymePair> rhymePairs = new ArrayList<>();
+
         // Define styles used to highlight rhymes
         int styleMod = 0;
         String[] styles = { "bold", "italic", "red", "underline", "highlight" };
@@ -336,41 +363,62 @@ public class Controller {
 
             // Loop through rhyme phrase pairs
             for (int j = 0; j < curLineRhymes.size(); j++) {
-                Rhyme r = curLineRhymes.get(j);
+                Rhyme rhyme = curLineRhymes.get(j);
 
                 // First and last word of rhyme phrase A
-                int firstWord = wordIndex(rc.lines.get(i), r.aStart.syllable);
-                int lastWord = wordIndex(rc.lines.get(i), r.aEnd().syllable);
+                int firstWord = wordIndex(rc.lines.get(i), rhyme.aStart.syllable);
+                int lastWord = wordIndex(rc.lines.get(i), rhyme.aEnd().syllable);
+
+                StringJoiner fullRhymePhraseA = new StringJoiner(" ");
 
                 // Update the styling of each word contained in the rhyme phrase
+                // Build fullRhymePhraseA
                 for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                     styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
+                    fullRhymePhraseA.add(styledLyrics[i].get(wordIndex).getWord());
                 }
 
+                RhymePair rhymePair = new RhymePair(fullRhymePhraseA.toString().replaceAll("[\\p{Punct}&&[^']]", ""), styles[styleMod]);
+                rhymePair.addALine(i + 1);
+
                 // Check if rhyme occurs on the same line
-                if (r.aStart.sameLine(r.bStart)) {
-                    firstWord = wordIndex(rc.lines.get(i), r.bStart.syllable);
-                    lastWord = wordIndex(rc.lines.get(i), r.bEnd().syllable);
+                if (rhyme.aStart.sameLine(rhyme.bStart)) {
+                    firstWord = wordIndex(rc.lines.get(i), rhyme.bStart.syllable);
+                    lastWord = wordIndex(rc.lines.get(i), rhyme.bEnd().syllable);
+
+                    StringJoiner fullRhymePhraseB = new StringJoiner(" ");
 
                     for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                         styledLyrics[i].get(wordIndex).style.add(styles[styleMod]);
+                        fullRhymePhraseB.add(styledLyrics[i].get(wordIndex).getWord());
                     }
+
+                    rhymePair.setElementB(fullRhymePhraseB.toString().replaceAll("[\\p{Punct}&&[^']]", ""));
                 } else {
                     // Handle rhymes across different lines
-                    firstWord = wordIndex(rc.lines.get(i + 1), r.bStart.syllable);
-                    lastWord = wordIndex(rc.lines.get(i + 1), r.bEnd().syllable);
+                    firstWord = wordIndex(rc.lines.get(i + 1), rhyme.bStart.syllable);
+                    lastWord = wordIndex(rc.lines.get(i + 1), rhyme.bEnd().syllable);
+
+                    StringJoiner fullRhymePhraseB = new StringJoiner(" ");
 
                     for (int wordIndex = firstWord; wordIndex <= lastWord; wordIndex++) {
                         styledLyrics[i + 1].get(wordIndex).style.add(styles[styleMod]);
+                        fullRhymePhraseB.add(styledLyrics[i + 1].get(wordIndex).getWord());
                     }
+
+                    rhymePair.setElementB(fullRhymePhraseB.toString().replaceAll("[\\p{Punct}&&[^']]", ""));
+                    rhymePair.addALine(i + 2);
                 }
+
+                // Add to list of rhyme pairs
+                rhymePairs.add(rhymePair);
 
                 // Rotate through the styles
                 styleMod = (styleMod + 1) % styles.length;
             }
         }
 
-        RhymeData multisyllableRhymeData = new RhymeData(styledLyrics);
+        RhymeData multisyllableRhymeData = new RhymeData(styledLyrics, rhymePairs);
         return ApiResponse.success(multisyllableRhymeData);
     }
 }
