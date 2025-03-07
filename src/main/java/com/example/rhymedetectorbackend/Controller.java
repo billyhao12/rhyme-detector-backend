@@ -107,6 +107,10 @@ public class Controller {
                                             {"word": "a", "style": []},
                                             {"word": "test", "style": ["highlight"]}
                                         ]
+                                    ],
+                                    "rhymePairs": [
+                                        {"elementA": "Hello", "elementB": "world", "style": ["highlight"], "lines": [1]},
+                                        {"elementA": "Hello", "elementB": "test", "style": ["highlight"], "lines": [1, 2]}
                                     ]
                                 }
                             }
