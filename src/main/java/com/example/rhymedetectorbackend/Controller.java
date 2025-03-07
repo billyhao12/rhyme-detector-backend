@@ -170,6 +170,9 @@ public class Controller {
             }
         }
 
+       // Initialize data structure for rhyme pairs
+       ArrayList<RhymePair> rhymePairs = new ArrayList<>();
+
         // Loop through the lines in the rhyme collection
         for (int i = 0; i < rhymeCollection.lines.size(); i++) {
             ArrayList<Rhyme> curLineRhymes = rhymeCollection.collection[i];
@@ -187,6 +190,10 @@ public class Controller {
                     wordA.style.add("highlight");
                 }
 
+                // Create a rhyme pair
+                RhymePair rhymePair = new RhymePair(wordA.getWord().replaceAll("[\\p{Punct}&&[^']]", ""), "highlight");
+                rhymePair.addALine(i + 1);
+
                 // Check if rhyme occurs on the same line
                 if (rhyme.aStart.sameLine(rhyme.bStart)) {
                     int wordBIndex = wordIndex(rhymeCollection.lines.get(i), rhyme.bStart.syllable);
@@ -194,6 +201,8 @@ public class Controller {
                     if (wordB.getStyle().isEmpty()) {
                         wordB.style.add("highlight");
                     }
+
+                    rhymePair.setElementB(wordB.getWord().replaceAll("[\\p{Punct}&&[^']]", ""));
                 } else {
                     // Handle rhymes across different lines
                     int wordBIndex = wordIndex(rhymeCollection.lines.get(i + 1), rhyme.bStart.syllable);
@@ -201,11 +210,17 @@ public class Controller {
                     if (wordB.getStyle().isEmpty()) {
                         wordB.style.add("highlight");
                     }
+
+                    rhymePair.setElementB(wordB.getWord().replaceAll("[\\p{Punct}&&[^']]", ""));
+                    rhymePair.addALine(i + 2);
                 }
+
+                // Add to list of rhyme pairs
+                rhymePairs.add(rhymePair);
             }
         }
 
-        RhymeData monosyllableRhymeData = new RhymeData(styledLyrics);
+        RhymeData monosyllableRhymeData = new RhymeData(styledLyrics, rhymePairs);
         return ApiResponse.success(monosyllableRhymeData);
     }
 
