@@ -45,8 +45,6 @@ public class Detector {
 
             ArrayList<Syllable> curLineSyllables = pLines.get(currentPLineIndex).getSyllables(false);
 
-            if (lastLineSyllables.isEmpty()) continue;
-
             // Find rhymes within a line
             for (int curLineSyllableIndex = 0; curLineSyllableIndex < curLineSyllables.size(); curLineSyllableIndex++) {
                 for (int curLineSyllableIndex2 = curLineSyllableIndex + 1; curLineSyllableIndex2 < curLineSyllables.size(); curLineSyllableIndex2++) {
@@ -56,6 +54,8 @@ public class Detector {
                     }
                 }
             }
+
+            if (lastLineSyllables.isEmpty()) continue;
 
             // Find rhymes between lines
             for (int lastLineSyllableIndex = 0; lastLineSyllableIndex < lastLineSyllables.size(); lastLineSyllableIndex++) {
@@ -143,6 +143,7 @@ public class Detector {
             }
         }
         rc.consolidate();
+
         return rc;
     }
 
